@@ -2,11 +2,11 @@ require("dotenv").config();
 const fs = require("fs");
 const { get } = require("https");
 
-const accountSid = process.env.APPLICATION_ID;
-const authToken = process.env.SECRET;
+const app_id = process.env.APPLICATION_ID;
+const secret = process.env.SECRET;
 let headers = new Headers();
 headers.append("Content-Type", "application/json");
-headers.append("Authorization", "Basic " + btoa(accountSid + ":" + authToken));
+headers.append("Authorization", "Basic " + btoa(app_id + ":" + secret));
 
 let currentPlanAPI =
   "services/v2/service_types/305308/plans?filter=future&per_page=1";
