@@ -14,6 +14,7 @@ let namesAPI = "services/v2/teams/1120542/people";
 let teamPositionsAPI = "services/v2/teams/1120542/team_positions";
 let positionAssignmentsAPI =
   "services/v2/teams/1120542/person_team_position_assignments";
+let blockoutAPI = "services/v2/people/";
 
 async function fetchWebApi(endpoint, method, body) {
   try {
@@ -33,19 +34,15 @@ async function fetchWebApi(endpoint, method, body) {
 }
 
 // Needed when a list of data is not of a fixed length
-async function fetchWithTotal(endpoint, method, body) {
-  const meta = await fetchWebApi(endpoint, method, body);
+async function fetchWithTotal(endpoint) {
+  const meta = await fetchWebApi(endpoint, "GET");
   let totalCount = meta.meta.total_count;
-  const data = await fetchWebApi(
-    endpoint + `?per_page=${totalCount}`,
-    method,
-    body
-  );
+  const data = await fetchWebApi(endpoint + `?per_page=${totalCount}`, "GET");
   return data;
 }
 
-async function getServices(endpoint, method) {
-  const service = await fetchWebApi(endpoint, method);
+async function getServices() {
+  const service = await fetchWebApi(currentPlanAPI);
   currentPlan = service.data[0].id;
   previousSchedules["Current Plan"] = parseInt(currentPlan);
   for (let i = 1; i <= 4; i++) {
@@ -64,8 +61,8 @@ async function getServices(endpoint, method) {
   );
 }
 
-async function getNames(endpoint, method) {
-  const names = await fetchWithTotal(endpoint, method);
+async function getNames() {
+  const names = await fetchWithTotal(namesAPI);
   for (let name of names.data) {
     personId = name.id;
     listOfNames[personId] = name.attributes.full_name;
@@ -80,8 +77,8 @@ async function getNames(endpoint, method) {
   return listOfNames;
 }
 
-async function getTeamPositions(endpoint, method) {
-  const positions = await fetchWebApi(endpoint, method);
+async function getTeamPositions() {
+  const positions = await fetchWebApi(teamPositionsAPI);
   for (let position of positions.data) {
     teamPositionId = position.id;
     teamPositions[teamPositionId] = position.attributes.name;
@@ -100,16 +97,11 @@ async function getTeamPositions(endpoint, method) {
   return teamPositions;
 }
 
-async function getTeamPositionAssignments(
-  namesEndpoint,
-  teamsEndpoint,
-  assignmentsEndpoint,
-  method
-) {
-  const names = await getNames(namesEndpoint, method);
-  const teamPositions = await getTeamPositions(teamsEndpoint, method);
+async function getTeamPositionAssignments() {
+  const names = await getNames();
+  const teamPositions = await getTeamPositions();
 
-  const positionAssignments = await fetchWithTotal(assignmentsEndpoint, method);
+  const positionAssignments = await fetchWithTotal(positionAssignmentsAPI);
   for (let positionAssignment of positionAssignments.data) {
     let positionId = positionAssignment.relationships.team_position.data.id;
     let personId = positionAssignment.relationships.person.data.id;
@@ -136,6 +128,8 @@ async function getTeamPositionAssignments(
   );
 }
 
+async function getBlockoutDates() {}
+
 let listOfNames = {};
 let teamPositions = {};
 let teamPositionAssignments = {};
@@ -144,11 +138,6 @@ let blockouts = {};
 let currentPlan;
 
 // Gets current service as well as previous 4 services
-getServices(currentPlanAPI, "GET");
+getServices();
 
-getTeamPositionAssignments(
-  namesAPI,
-  teamPositionsAPI,
-  positionAssignmentsAPI,
-  "GET"
-);
+getTeamPositionAssignments();
