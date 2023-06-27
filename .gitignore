@@ -128,3 +128,10 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# temp files for testing purposes
+psuedocode.txt
+names.json
+positions.json
+previous_plans.json
+team_positions.json
