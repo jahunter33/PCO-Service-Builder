@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const { get } = require("https");
+const { stringify } = require("querystring");
 
 const app_id = process.env.APPLICATION_ID;
 const secret = process.env.SECRET;
@@ -8,13 +9,11 @@ let headers = new Headers();
 headers.append("Content-Type", "application/json");
 headers.append("Authorization", "Basic " + btoa(app_id + ":" + secret));
 
-let currentPlanAPI =
-  "services/v2/service_types/305308/plans?filter=future&per_page=1";
-let namesAPI = "services/v2/teams/1120542/people";
-let teamPositionsAPI = "services/v2/teams/1120542/team_positions";
-let positionAssignmentsAPI =
-  "services/v2/teams/1120542/person_team_position_assignments";
-let blockoutAPI = "services/v2/people/";
+const currentPlanAPI = process.env.CURRENT_PLAN;
+const namesAPI = process.env.LIST_OF_NAMES;
+const teamPositionsAPI = process.env.TEAM_POSITIONS;
+const positionAssignmentsAPI = process.env.TEAM_POSITION_ASSIGNMENTS;
+const blockoutAPI = process.env.BLOCKOUT_DATES;
 
 async function fetchWebApi(endpoint, method, body) {
   try {
@@ -41,13 +40,45 @@ async function fetchWithTotal(endpoint) {
   return data;
 }
 
+async function fetchOffset(endpoint) {
+  const meta = await fetchWebApi(endpoint, "GET");
+  let offset = meta.meta.total_count;
+  return offset;
+}
+
 async function getServices() {
-  const service = await fetchWebApi(currentPlanAPI);
-  currentPlan = service.data[0].id;
-  previousSchedules["Current Plan"] = parseInt(currentPlan);
-  for (let i = 1; i <= 4; i++) {
-    previousSchedules[`${i} Week Ago`] = parseInt(currentPlan) - i;
+  const futureFilter = "?filter=future&per_page=1";
+  const pastFilter = "?filter=past&per_page=4&offset=523";
+  const currentService = await fetchWebApi(
+    currentPlanAPI + futureFilter,
+    "GET"
+  );
+
+  let planId = currentService.data[0].id;
+  let planDate = currentService.data[0].attributes.sort_date;
+
+  previousSchedules["Current Plan"] = {
+    id: parseInt(planId),
+    date: planDate,
+  };
+
+  let offset = await fetchOffset(currentPlanAPI + pastFilter);
+  offset = stringify(offset - 4);
+  const pastServices = await fetchWebApi(
+    currentPlanAPI + pastFilter + offset,
+    "GET"
+  );
+  for (let i = 3; i >= 0; i--) {
+    const j = 4 - i;
+    planId = pastServices.data[i].id;
+    planDate = pastServices.data[i].attributes.sort_date;
+
+    previousSchedules[`${j > 1 ? j + " Weeks Ago" : "1 Week Ago"}`] = {
+      id: parseInt(planId),
+      date: planDate,
+    };
   }
+
   fs.writeFile(
     "previous_plans.json",
     JSON.stringify(previousSchedules, null, 4),
@@ -59,6 +90,7 @@ async function getServices() {
       }
     }
   );
+  return previousSchedules;
 }
 
 async function getNames() {
@@ -78,7 +110,7 @@ async function getNames() {
 }
 
 async function getTeamPositions() {
-  const positions = await fetchWebApi(teamPositionsAPI);
+  const positions = await fetchWebApi(teamPositionsAPI, "GET");
   for (let position of positions.data) {
     teamPositionId = position.id;
     teamPositions[teamPositionId] = position.attributes.name;
@@ -116,7 +148,7 @@ async function getTeamPositionAssignments() {
     }
   }
   fs.writeFile(
-    "positions.json",
+    "team_position_assignments.json",
     JSON.stringify(teamPositionAssignments, null, 4),
     (err) => {
       if (err) {
@@ -128,16 +160,53 @@ async function getTeamPositionAssignments() {
   );
 }
 
-async function getBlockoutDates() {}
+async function getBlockoutDates() {
+  const teamMemberIds = await getNames();
+  const teamIds = [];
+
+  Object.keys(teamMemberIds).forEach((key) => {
+    teamIds.push(key);
+  });
+
+  for (let memberId of teamIds) {
+    let currentBlockoutApiUrl = blockoutAPI.replace("1", memberId);
+    let blackoutResponse = await fetchWebApi(currentBlockoutApiUrl, "GET");
+    const totalBlockoutCount = parseInt(blackoutResponse.meta.total_count);
+
+    const blockoutIntervals = [];
+    if (totalBlockoutCount >> 0) {
+      for (i = 0; i < totalBlockoutCount; i++) {
+        let startsAt = blackoutResponse.data[i].attributes.starts_at;
+        let endsAt = blackoutResponse.data[i].attributes.ends_at;
+        blockoutIntervals[i] = { "Starts at": startsAt, "Ends at": endsAt };
+      }
+
+      blockouts[teamMemberIds[memberId]] = {
+        id: memberId,
+        number_of_blockouts: totalBlockoutCount,
+        blockouts: blockoutIntervals,
+      };
+    }
+  }
+
+  fs.writeFile("blockouts.json", JSON.stringify(blockouts, null, 4), (err) => {
+    if (err) {
+      console.error("Error writing to file: ", err);
+    } else {
+      console.log("Data written to file successfully.");
+    }
+  });
+  return blockouts;
+}
 
 let listOfNames = {};
 let teamPositions = {};
 let teamPositionAssignments = {};
 let previousSchedules = {};
 let blockouts = {};
-let currentPlan;
 
-// Gets current service as well as previous 4 services
 getServices();
 
 getTeamPositionAssignments();
+
+getBlockoutDates();
