@@ -1,79 +1,74 @@
 require("dotenv").config();
 const fs = require("fs");
-const { get } = require("https");
-const { stringify } = require("querystring");
 
-const app_id = process.env.APPLICATION_ID;
-const secret = process.env.SECRET;
-let headers = new Headers();
-headers.append("Content-Type", "application/json");
-headers.append("Authorization", "Basic " + btoa(app_id + ":" + secret));
+const APP_ID = process.env.APPLICATION_ID;
+const SECRET = process.env.SECRET;
+const SERVICE_TYPE_ID = process.env.SERVICE_TYPE_ID;
+const TEAM_ID = process.env.TEAM_ID;
 
-const currentPlanAPI = process.env.CURRENT_PLAN;
-const namesAPI = process.env.LIST_OF_NAMES;
-const teamPositionsAPI = process.env.TEAM_POSITIONS;
-const positionAssignmentsAPI = process.env.TEAM_POSITION_ASSIGNMENTS;
-const blockoutAPI = process.env.BLOCKOUT_DATES;
+async function fetchWebApi(
+  endpoint,
+  method,
+  body = undefined,
+  total = 1000,
+  queryParams = {}
+) {
+  let apiUrl = new URL(`https://api.planningcenteronline.com/${endpoint}`);
+  let headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Basic " + btoa(APP_ID + ":" + SECRET));
 
-async function fetchWebApi(endpoint, method, body) {
+  queryParams["per_page"] = total;
+  // iterate through query params and append to url
+  for (let key in queryParams) {
+    apiUrl.searchParams.append(key, queryParams[key]);
+  }
+
   try {
-    const response = await fetch(
-      `https://api.planningcenteronline.com/${endpoint}`,
-      {
-        headers: headers,
-        method: method,
-        body: JSON.stringify(body),
-      }
-    );
-    const data = await response.json();
-    return data;
+    const response = await fetch(apiUrl, {
+      headers: headers,
+      method: method,
+      body: JSON.stringify(body),
+    });
+
+    return response.json();
   } catch (error) {
-    console.log("Error: ", error);
+    console.error(error);
   }
 }
 
-// Needed when a list of data is not of a fixed length
-async function fetchWithTotal(endpoint) {
-  const meta = await fetchWebApi(endpoint, "GET");
-  let totalCount = meta.meta.total_count;
-  const data = await fetchWebApi(endpoint + `?per_page=${totalCount}`, "GET");
-  return data;
-}
-
-async function fetchOffset(endpoint) {
-  const meta = await fetchWebApi(endpoint, "GET");
-  let offset = meta.meta.total_count;
-  return offset;
-}
-
 async function getServices() {
-  const futureFilter = "?filter=future&per_page=1";
-  const pastFilter = "?filter=past&per_page=4&offset=523";
-  const currentService = await fetchWebApi(
-    currentPlanAPI + futureFilter,
-    "GET"
+  const previousSchedules = {};
+  const currentServicesRes = await fetchWebApi(
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans`,
+    "GET",
+    undefined,
+    1,
+    { filter: "future" }
   );
 
-  let planId = currentService.data[0].id;
-  let planDate = currentService.data[0].attributes.sort_date;
+  let planId = currentServicesRes.data[0].id;
+  let planDate = currentServicesRes.data[0].attributes.sort_date;
 
   previousSchedules["Current Plan"] = {
     id: parseInt(planId),
     date: planDate,
   };
 
-  let offset = await fetchOffset(currentPlanAPI + pastFilter);
-  offset = stringify(offset - 4);
-  const pastServices = await fetchWebApi(
-    currentPlanAPI + pastFilter + offset,
-    "GET"
+  const pastServicesRes = await fetchWebApi(
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans`,
+    "GET",
+    undefined,
+    4,
+    { filter: "past", order: "-sort_date" }
   );
-  for (let i = 3; i >= 0; i--) {
-    const j = 4 - i;
-    planId = pastServices.data[i].id;
-    planDate = pastServices.data[i].attributes.sort_date;
 
-    previousSchedules[`${j > 1 ? j + " Weeks Ago" : "1 Week Ago"}`] = {
+  for (let i = 0; i < pastServicesRes.data.length; i++) {
+    planId = pastServicesRes.data[i].id;
+    planDate = pastServicesRes.data[i].attributes.sort_date;
+
+    // just for readability in json file
+    previousSchedules[`${i} Week Ago`] = {
       id: parseInt(planId),
       date: planDate,
     };
@@ -93,27 +88,32 @@ async function getServices() {
   return previousSchedules;
 }
 
-async function getNames() {
-  const names = await fetchWithTotal(namesAPI);
-  for (let name of names.data) {
-    personId = name.id;
-    listOfNames[personId] = name.attributes.full_name;
+async function getPeople() {
+  const peopleObject = {};
+  const res = await fetchWebApi(`services/v2/teams/${TEAM_ID}/people`, "GET");
+  for (let person of res.data) {
+    personId = person.id;
+    peopleObject[personId] = person.attributes.full_name;
   }
-  fs.writeFile("names.json", JSON.stringify(listOfNames, null, 4), (err) => {
+  fs.writeFile("people.json", JSON.stringify(peopleObject, null, 4), (err) => {
     if (err) {
       console.error("Error writing to file: ", err);
     } else {
       console.log("Data written to file successfully.");
     }
   });
-  return listOfNames;
+  return peopleObject;
 }
 
 async function getTeamPositions() {
-  const positions = await fetchWebApi(teamPositionsAPI, "GET");
-  for (let position of positions.data) {
-    teamPositionId = position.id;
-    teamPositions[teamPositionId] = position.attributes.name;
+  const teamPositions = {};
+  const res = await fetchWebApi(
+    `services/v2/teams/${TEAM_ID}/team_positions`,
+    "GET"
+  );
+  for (let teamPosition of res.data) {
+    teamPositionId = teamPosition.id;
+    teamPositions[teamPositionId] = teamPosition.attributes.name;
   }
   fs.writeFile(
     "team_positions.json",
@@ -130,21 +130,26 @@ async function getTeamPositions() {
 }
 
 async function getTeamPositionAssignments() {
-  const names = await getNames();
+  const teamPositionAssignments = {};
+  const people = await getPeople();
   const teamPositions = await getTeamPositions();
 
-  const positionAssignments = await fetchWithTotal(positionAssignmentsAPI);
-  for (let positionAssignment of positionAssignments.data) {
-    let positionId = positionAssignment.relationships.team_position.data.id;
-    let personId = positionAssignment.relationships.person.data.id;
+  const res = await fetchWebApi(
+    `services/v2/teams/${TEAM_ID}/person_team_position_assignments`,
+    "GET"
+  );
+  for (let teamPositionAssignment of res.data) {
+    const positionId =
+      teamPositionAssignment.relationships.team_position.data.id;
+    const personId = teamPositionAssignment.relationships.person.data.id;
 
-    positionId = teamPositions[positionId];
-    personId = names[personId];
+    const positionName = teamPositions[positionId];
+    const personName = people[personId];
 
-    if (teamPositionAssignments[positionId]) {
-      teamPositionAssignments[positionId].push(personId);
+    if (teamPositionAssignments[positionName]) {
+      teamPositionAssignments[positionName].push(personName);
     } else {
-      teamPositionAssignments[positionId] = [personId];
+      teamPositionAssignments[positionName] = [personName];
     }
   }
   fs.writeFile(
@@ -158,52 +163,51 @@ async function getTeamPositionAssignments() {
       }
     }
   );
+  return teamPositionAssignments;
 }
 
 async function getBlockoutDates() {
-  const teamMemberIds = await getNames();
-  const teamIds = [];
+  const blockoutDates = {};
+  const people = await getPeople();
 
-  Object.keys(teamMemberIds).forEach((key) => {
-    teamIds.push(key);
-  });
-
-  for (let memberId of teamIds) {
-    let currentBlockoutApiUrl = blockoutAPI.replace("1", memberId);
-    let blackoutResponse = await fetchWebApi(currentBlockoutApiUrl, "GET");
-    const totalBlockoutCount = parseInt(blackoutResponse.meta.total_count);
+  for (let personId in people) {
+    let res = await fetchWebApi(
+      `services/v2/people/${personId}/blockouts`,
+      "GET",
+      undefined,
+      1000,
+      { filter: "future" }
+    );
 
     const blockoutIntervals = [];
-    if (totalBlockoutCount >> 0) {
-      for (i = 0; i < totalBlockoutCount; i++) {
-        let startsAt = blackoutResponse.data[i].attributes.starts_at;
-        let endsAt = blackoutResponse.data[i].attributes.ends_at;
-        blockoutIntervals[i] = { "Starts at": startsAt, "Ends at": endsAt };
-      }
 
-      blockouts[teamMemberIds[memberId]] = {
-        id: memberId,
-        number_of_blockouts: totalBlockoutCount,
-        blockouts: blockoutIntervals,
+    for (i = 0; i < res.data.length; i++) {
+      let startsAt = res.data[i].attributes.starts_at;
+      let endsAt = res.data[i].attributes.ends_at;
+      blockoutIntervals[i] = { "Starts at": startsAt, "Ends at": endsAt };
+    }
+
+    if (blockoutIntervals.length > 0) {
+      blockoutDates[people[personId]] = {
+        id: personId,
+        blockoutsDates: blockoutIntervals,
       };
     }
   }
 
-  fs.writeFile("blockouts.json", JSON.stringify(blockouts, null, 4), (err) => {
-    if (err) {
-      console.error("Error writing to file: ", err);
-    } else {
-      console.log("Data written to file successfully.");
+  fs.writeFile(
+    "blockouts.json",
+    JSON.stringify(blockoutDates, null, 4),
+    (err) => {
+      if (err) {
+        console.error("Error writing to file: ", err);
+      } else {
+        console.log("Data written to file successfully.");
+      }
     }
-  });
-  return blockouts;
+  );
+  return blockoutDates;
 }
-
-let listOfNames = {};
-let teamPositions = {};
-let teamPositionAssignments = {};
-let previousSchedules = {};
-let blockouts = {};
 
 getServices();
 

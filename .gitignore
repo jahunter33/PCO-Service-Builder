@@ -135,7 +135,7 @@ dist
 
 # temp files for testing purposes
 psuedocode.txt
-names.json
+people.json
 team_position_assignments.json
 previous_plans.json
 team_positions.json
