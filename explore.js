@@ -19,7 +19,6 @@ async function fetchWebApi(
   headers.append("Authorization", "Basic " + btoa(APP_ID + ":" + SECRET));
 
   queryParams["per_page"] = total;
-  // iterate through query params and append to url
   for (let key in queryParams) {
     apiUrl.searchParams.append(key, queryParams[key]);
   }

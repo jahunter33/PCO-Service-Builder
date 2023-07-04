@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const { fetchWebApi } = require("./api_utils");
+const moment = require("moment");
 
 const SERVICE_TYPE_ID = process.env.SERVICE_TYPE_ID;
 const TEAM_ID = process.env.TEAM_ID;
@@ -36,7 +37,7 @@ async function getServices() {
     planDate = pastServicesRes.data[i].attributes.sort_date;
 
     // just for readability in json file
-    previousSchedules[`${i} Week Ago`] = {
+    previousSchedules[`${i}_week_ago`] = {
       id: parseInt(planId),
       date: planDate,
     };
@@ -177,8 +178,43 @@ async function getBlockoutDates() {
   return blockoutDates;
 }
 
-getServices();
+// write function that iterates through blockouts and checks if any blockouts overlap with service times and removes people that have overlaps
+function removePeopleFromPositionAssignments() {
+  const blockouts = require("./blockouts.json");
+  const teamPositionAssignments = require("./team_position_assignments.json");
+  const previousPlans = require("./previous_plans.json");
 
-getTeamPositionAssignments();
+  for (let position in teamPositionAssignments) {
+    // reverse for loop so that we dont skip over any indexes when we splice
+    for (let i = teamPositionAssignments[position].length - 1; i >= 0; i--) {
+      let person = teamPositionAssignments[position][i];
 
-getBlockoutDates();
+      if (blockouts[person]) {
+        for (let blockout of blockouts[person]["blockoutsDates"]) {
+          if (
+            moment(previousPlans["Current Plan"]["date"]).isBetween(
+              blockout["Starts at"],
+              blockout["Ends at"]
+            )
+          ) {
+            teamPositionAssignments[position].splice(i, 1);
+          }
+        }
+      }
+    }
+  }
+
+  fs.writeFile(
+    "team_position_assignments_UPDATED.json",
+    JSON.stringify(teamPositionAssignments, null, 4),
+    (err) => {
+      if (err) {
+        console.error("Error writing to file: ", err);
+      } else {
+        console.log("Data written to file successfully.");
+      }
+    }
+  );
+}
+
+removePeopleFromPositionAssignments();
