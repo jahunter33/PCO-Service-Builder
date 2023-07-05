@@ -1,7 +1,6 @@
 require("dotenv").config();
 const fs = require("fs");
 const { fetchWebApi } = require("./api_utils");
-const moment = require("moment");
 
 const SERVICE_TYPE_ID = process.env.SERVICE_TYPE_ID;
 const TEAM_ID = process.env.TEAM_ID;
@@ -135,12 +134,12 @@ async function getTeamPositionAssignments() {
   return teamPositionAssignments;
 }
 
-async function getBlockoutDates() {
-  const blockoutDates = {};
+async function getConflicts() {
+  const scheduleConflicts = {};
   const people = await getPeople();
 
   for (let personId in people) {
-    let res = await fetchWebApi(
+    let blockoutsRes = await fetchWebApi(
       `services/v2/people/${personId}/blockouts`,
       "GET",
       undefined,
@@ -148,25 +147,38 @@ async function getBlockoutDates() {
       { filter: "future" }
     );
 
-    const blockoutIntervals = [];
+    let conflictsRes = await fetchWebApi(
+      `services/v2/people/${personId}/schedules`,
+      "GET",
+      undefined,
+      1000
+    );
 
-    for (i = 0; i < res.data.length; i++) {
-      let startsAt = res.data[i].attributes.starts_at;
-      let endsAt = res.data[i].attributes.ends_at;
-      blockoutIntervals[i] = { "Starts at": startsAt, "Ends at": endsAt };
+    const blockoutIntervals = [];
+    const potentialConflicts = [];
+
+    for (i = 0; i < blockoutsRes.data.length; i++) {
+      let startsAt = blockoutsRes.data[i].attributes.starts_at;
+      let endsAt = blockoutsRes.data[i].attributes.ends_at;
+      blockoutIntervals[i] = { starts_at: startsAt, ends_at: endsAt };
     }
 
-    if (blockoutIntervals.length > 0) {
-      blockoutDates[people[personId]] = {
+    for (i = 0; i < conflictsRes.data.length; i++) {
+      potentialConflicts.push(conflictsRes.data[i].attributes.sort_date);
+    }
+
+    if (blockoutIntervals.length > 0 || potentialConflicts.length > 0) {
+      scheduleConflicts[people[personId]] = {
         id: personId,
-        blockoutsDates: blockoutIntervals,
+        blockout_dates: blockoutIntervals,
+        potential_conflicts: potentialConflicts,
       };
     }
   }
 
   fs.writeFile(
-    "blockouts.json",
-    JSON.stringify(blockoutDates, null, 4),
+    "conflicts.json",
+    JSON.stringify(scheduleConflicts, null, 4),
     (err) => {
       if (err) {
         console.error("Error writing to file: ", err);
@@ -175,46 +187,58 @@ async function getBlockoutDates() {
       }
     }
   );
-  return blockoutDates;
+  return scheduleConflicts;
 }
 
-// write function that iterates through blockouts and checks if any blockouts overlap with service times and removes people that have overlaps
-function removePeopleFromPositionAssignments() {
-  const blockouts = require("./blockouts.json");
-  const teamPositionAssignments = require("./team_position_assignments.json");
-  const previousPlans = require("./previous_plans.json");
+const services = {
+  removePeopleWithConflicts: function (
+    conflicts,
+    teamPositionAssignments,
+    previousPlans
+  ) {
+    for (let position in teamPositionAssignments) {
+      // reverse for loop so that we dont skip over any indexes when we splice
+      for (let i = teamPositionAssignments[position].length - 1; i >= 0; i--) {
+        let person = teamPositionAssignments[position][i];
 
-  for (let position in teamPositionAssignments) {
-    // reverse for loop so that we dont skip over any indexes when we splice
-    for (let i = teamPositionAssignments[position].length - 1; i >= 0; i--) {
-      let person = teamPositionAssignments[position][i];
+        if (conflicts[person]) {
+          for (let conflict of conflicts[person]["potential_conflicts"]) {
+            const planDate = new Date(previousPlans["Current Plan"]["date"]);
+            const conflictDate = new Date(conflict);
 
-      if (blockouts[person]) {
-        for (let blockout of blockouts[person]["blockoutsDates"]) {
-          if (
-            moment(previousPlans["Current Plan"]["date"]).isBetween(
-              blockout["Starts at"],
-              blockout["Ends at"]
-            )
-          ) {
-            teamPositionAssignments[position].splice(i, 1);
+            if (planDate.getTime() === conflictDate.getTime()) {
+              teamPositionAssignments[position].splice(i, 1);
+            }
+          }
+
+          for (let blockout of conflicts[person]["blockout_dates"]) {
+            const planDate = new Date(previousPlans["Current Plan"]["date"]);
+            const blockoutStart = new Date(blockout["starts_at"]);
+            const blockoutEnd = new Date(blockout["ends_at"]);
+
+            if (
+              planDate.getTime() >= blockoutStart.getTime() &&
+              planDate.getTime() <= blockoutEnd
+            ) {
+              teamPositionAssignments[position].splice(i, 1);
+            }
           }
         }
       }
     }
-  }
 
-  fs.writeFile(
-    "team_position_assignments_UPDATED.json",
-    JSON.stringify(teamPositionAssignments, null, 4),
-    (err) => {
-      if (err) {
-        console.error("Error writing to file: ", err);
-      } else {
-        console.log("Data written to file successfully.");
+    fs.writeFile(
+      "team_position_assignments_UPDATED.json",
+      JSON.stringify(teamPositionAssignments, null, 4),
+      (err) => {
+        if (err) {
+          console.error("Error writing to file: ", err);
+        } else {
+          console.log("Data written to file successfully.");
+        }
       }
-    }
-  );
-}
+    );
+  },
+};
 
-removePeopleFromPositionAssignments();
+module.exports = services;
