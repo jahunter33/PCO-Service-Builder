@@ -190,7 +190,53 @@ async function getConflicts() {
   return scheduleConflicts;
 }
 
+async function getNeededPositions() {
+  const neededPositions = {};
+  const services = await getServices();
+  const SERVICE_ID = services["Current Plan"].id;
+  const res = await fetchWebApi(
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans/${SERVICE_ID}/needed_positions`,
+    "GET",
+    undefined,
+    1000,
+    { "where[team_id]": TEAM_ID }
+  );
+  for (let neededPosition of res.data) {
+    neededPositions[neededPosition.attributes.team_position_name] = {
+      quanity: neededPosition.attributes.quantity,
+    };
+  }
+  if (
+    Object.keys(neededPositions).length === 0 &&
+    neededPositions.constructor === Object
+  ) {
+    console.log("All positions are filled!");
+  } else {
+    console.log("Positions still needed: ", neededPositions);
+  }
+  return neededPositions;
+}
+
 const services = {
+  createPreferences: function (people) {
+    const preferences = {};
+    for (let person in people) {
+      preferences[people[person]] = {
+        id: person,
+        priority: 0,
+      };
+    }
+
+    let data = JSON.stringify(preferences, null, 4);
+    fs.writeFile("preferences.json", data, (err) => {
+      if (err) {
+        console.error("Error writing to file: ", err);
+      } else {
+        console.log("Data written to file successfully.");
+      }
+    });
+  },
+
   removePeopleWithConflicts: function (
     conflicts,
     teamPositionAssignments,
@@ -242,3 +288,5 @@ const services = {
 };
 
 module.exports = services;
+
+getNeededPositions();
