@@ -1,18 +1,28 @@
 const services = require("./service_data_fetch");
 
 async function main() {
-  const people = require("./people.json");
-  const conflicts = require("./conflicts.json");
-  const teamPositionAssignments = require("./team_position_assignments.json");
-  const previousPlans = require("./previous_plans.json");
+  const preferences = require("./preferences.json");
+  const people = await services.getPeople();
+  const conflicts = await services.getConflicts();
+  const teamPositionAssignments = await services.getTeamPositionAssignments();
+  const previousPlans = await services.getPlans();
 
   // services.createPreferences(people);
 
-  services.removePeopleWithConflicts(
+  const availablePeople = services.removePeopleWithConflicts(
     conflicts,
     teamPositionAssignments,
     previousPlans
   );
+
+  services.getNeededPositions().then((neededPositions) => {
+    const scheduleAssignments = services.generateSchedule(
+      neededPositions,
+      availablePeople,
+      preferences
+    );
+    services.postSchedule(scheduleAssignments, previousPlans, preferences);
+  });
 }
 
 main().catch((error) => {
