@@ -9,11 +9,12 @@ const {
 const preferences = require("../../preferences.json");
 
 async function generateSchedule() {
+  console.log("Generating schedule...");
   const schedule = {};
   const people = await _getPeople();
   const previousPlans = await _getPlans();
   const teamPositionAssignments = await _getTeamPositionAssignments(people);
-  const availablePeople = _removePeopleWithConflicts(
+  const availablePeople = await _removePeopleWithConflicts(
     people,
     previousPlans,
     teamPositionAssignments
@@ -49,13 +50,13 @@ async function _removePeopleWithConflicts(
   plans,
   teamPositionAssignments
 ) {
-  const availablePeople = {};
+  const availablePeople = teamPositionAssignments;
   const conflicts = await _getConflicts(people);
 
-  for (let position in teamPositionAssignments) {
+  for (let position in availablePeople) {
     // reverse for loop so that we dont skip over any indexes when we splice
-    for (let i = teamPositionAssignments[position].length - 1; i >= 0; i--) {
-      let person = teamPositionAssignments[position][i];
+    for (let i = availablePeople[position].length - 1; i >= 0; i--) {
+      let person = availablePeople[position][i];
 
       if (conflicts[person]) {
         for (let conflict of conflicts[person]["potential_conflicts"]) {

@@ -5,11 +5,13 @@ const TEAM_ID = process.env.TEAM_ID;
 
 async function _getPeople() {
   const peopleObject = {};
+  console.log("Fetching people...");
   const res = await fetchWebApi(`services/v2/teams/${TEAM_ID}/people`, "GET");
   for (let person of res.data) {
     personId = person.id;
     peopleObject[personId] = person.attributes.full_name;
   }
+  console.log("People fetched.");
   return peopleObject;
 }
 
