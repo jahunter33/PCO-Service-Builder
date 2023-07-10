@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ path: "../../.env" });
 
 const APP_ID = process.env.APPLICATION_ID;
 const SECRET = process.env.SECRET;
