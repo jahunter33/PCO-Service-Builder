@@ -1,13 +1,10 @@
-const services = require("./service_data_fetch");
+const services = require("./src/service_data_fetch");
+const preferences = require("./preferences.json");
 
 async function main() {
-  const preferences = require("./preferences.json");
-  const people = await services.getPeople();
   const conflicts = await services.getConflicts();
   const teamPositionAssignments = await services.getTeamPositionAssignments();
   const previousPlans = await services.getPlans();
-
-  // services.createPreferences(people);
 
   const availablePeople = services.removePeopleWithConflicts(
     conflicts,
@@ -21,6 +18,7 @@ async function main() {
       availablePeople,
       preferences
     );
+    // commented out line so that the code doesnt keep running unnecessarily
     services.postSchedule(scheduleAssignments, previousPlans, preferences);
   });
 }
