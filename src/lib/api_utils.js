@@ -1,7 +1,7 @@
-require("dotenv").config({ path: "../../.env" });
+const config = require("./config");
 
-const APP_ID = process.env.APPLICATION_ID;
-const SECRET = process.env.SECRET;
+const APP_ID = config.APP_ID;
+const SECRET = config.SECRET;
 
 async function fetchWebApi(
   endpoint,

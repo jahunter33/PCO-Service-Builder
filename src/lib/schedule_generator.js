@@ -1,25 +1,24 @@
-require("dotenv").config({ path: "../../.env" });
 const {
-  _getPeople,
-  _getTeamPositionAssignments,
-  _getPlans,
-  _getConflicts,
-  _getNeededPositions,
+  getPeople,
+  getTeamPositionAssignments,
+  getPlans,
+  getConflicts,
+  getNeededPositions,
 } = require("./data_fetch_utils");
 const preferences = require("../../preferences.json");
 
 async function generateSchedule() {
   console.log("Generating schedule...");
   const schedule = {};
-  const people = await _getPeople();
-  const previousPlans = await _getPlans();
-  const teamPositionAssignments = await _getTeamPositionAssignments(people);
+  const people = await getPeople();
+  const previousPlans = await getPlans();
+  const teamPositionAssignments = await getTeamPositionAssignments(people);
   const availablePeople = await _removePeopleWithConflicts(
     people,
     previousPlans,
     teamPositionAssignments
   );
-  const neededPositions = _getNeededPositions();
+  const neededPositions = getNeededPositions();
   if (neededPositions.length === 0) {
     return null;
   }
@@ -51,7 +50,7 @@ async function _removePeopleWithConflicts(
   teamPositionAssignments
 ) {
   const availablePeople = teamPositionAssignments;
-  const conflicts = await _getConflicts(people);
+  const conflicts = await getConflicts(people);
 
   for (let position in availablePeople) {
     // reverse for loop so that we dont skip over any indexes when we splice

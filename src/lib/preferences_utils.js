@@ -1,5 +1,4 @@
-require("dotenv").config({ path: "../../.env" });
-const fs = require("fs");
+const { writeJson } = require("./debug_utils");
 
 function createPreferences(people) {
   const preferences = {};
@@ -11,11 +10,5 @@ function createPreferences(people) {
   }
 
   let data = JSON.stringify(preferences, null, 4);
-  fs.writeFile("preferences.json", data, (err) => {
-    if (err) {
-      console.error("Error writing to file: ", err);
-    } else {
-      console.log("Data written to file successfully.");
-    }
-  });
+  writeJson(data, "preferences.json");
 }

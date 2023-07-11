@@ -1,12 +1,12 @@
-require("dotenv").config({ path: "../../.env" });
 const { fetchWebApi } = require("./api_utils");
-const { _getPlans } = require("./data_fetch_utils");
+const { getPlans } = require("./data_fetch_utils");
 const preferences = require("../../preferences.json");
-const SERVICE_TYPE_ID = process.env.SERVICE_TYPE_ID;
-const TEAM_ID = process.env.TEAM_ID;
+const config = require("./config");
+const SERVICE_TYPE_ID = config.SERVICE_TYPE_ID;
+const TEAM_ID = config.TEAM_ID;
 
 async function postSchedule(scheduleAssignments) {
-  const plans = await _getPlans();
+  const plans = await getPlans();
   for (let position in scheduleAssignments) {
     for (let person of scheduleAssignments[position]) {
       let person_id = preferences[person].id;

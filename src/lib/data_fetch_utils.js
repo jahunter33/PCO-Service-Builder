@@ -1,9 +1,9 @@
-require("dotenv").config({ path: "../../.env" });
 const { fetchWebApi } = require("./api_utils");
-const SERVICE_TYPE_ID = process.env.SERVICE_TYPE_ID;
-const TEAM_ID = process.env.TEAM_ID;
+const config = require("./config");
+const SERVICE_TYPE_ID = config.SERVICE_TYPE_ID;
+const TEAM_ID = config.TEAM_ID;
 
-async function _getPeople() {
+async function getPeople() {
   const peopleObject = {};
   console.log("Fetching people...");
   const res = await fetchWebApi(`services/v2/teams/${TEAM_ID}/people`, "GET");
@@ -15,7 +15,7 @@ async function _getPeople() {
   return peopleObject;
 }
 
-async function _getTeamPositions() {
+async function getTeamPositions() {
   const teamPositions = {};
   const res = await fetchWebApi(
     `services/v2/teams/${TEAM_ID}/team_positions`,
@@ -28,9 +28,9 @@ async function _getTeamPositions() {
   return teamPositions;
 }
 
-async function _getTeamPositionAssignments(people) {
+async function getTeamPositionAssignments(people) {
   const teamPositionAssignments = {};
-  const teamPositions = await _getTeamPositions();
+  const teamPositions = await getTeamPositions();
   const res = await fetchWebApi(
     `services/v2/teams/${TEAM_ID}/person_team_position_assignments`,
     "GET"
@@ -50,7 +50,7 @@ async function _getTeamPositionAssignments(people) {
   return teamPositionAssignments;
 }
 
-async function _getPlans() {
+async function getPlans() {
   const previousSchedules = {};
   const currentServicesRes = await fetchWebApi(
     `services/v2/service_types/${SERVICE_TYPE_ID}/plans`,
@@ -84,7 +84,7 @@ async function _getPlans() {
 }
 
 // FIXME: If someone has already declined for that week, include them in the list of people with conflicts
-async function _getConflicts(people) {
+async function getConflicts(people) {
   const scheduleConflicts = {};
   for (let personId in people) {
     let blockoutsRes = await fetchWebApi(
@@ -121,9 +121,9 @@ async function _getConflicts(people) {
   return scheduleConflicts;
 }
 
-async function _getNeededPositions() {
+async function getNeededPositions() {
   const neededPositions = {};
-  const plans = await _getPlans();
+  const plans = await getPlans();
   const serviceId = plans["current_plan"].id;
   const res = await fetchWebApi(
     `services/v2/service_types/${SERVICE_TYPE_ID}/plans/${serviceId}/needed_positions`,
@@ -149,9 +149,9 @@ async function _getNeededPositions() {
 }
 
 module.exports = {
-  _getPeople,
-  _getTeamPositionAssignments,
-  _getPlans,
-  _getConflicts,
-  _getNeededPositions,
+  getPeople,
+  getTeamPositionAssignments,
+  getPlans,
+  getConflicts,
+  getNeededPositions,
 };
