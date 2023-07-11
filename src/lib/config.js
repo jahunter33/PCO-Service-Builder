@@ -1,5 +1,4 @@
 require("dotenv").config({ path: "../.env" });
-const preferences = require("../../preferences.json");
 
 const config = {
   APP_ID: process.env.APPLICATION_ID,
