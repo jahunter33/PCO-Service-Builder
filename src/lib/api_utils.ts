@@ -15,10 +15,36 @@ interface ApiResponse {
   data: any; // Ideally, replace `any` with the actual structure you expect.
 }
 
+interface Body {
+  data: {
+    type: string;
+    attributes: {
+      status: string;
+      notes: string;
+      team_position_name: string;
+      prepare_notification: boolean;
+    };
+    relationships: {
+      person: {
+        data: {
+          type: string;
+          id: string;
+        };
+      };
+      team: {
+        data: {
+          type: string;
+          id: string | undefined;
+        };
+      };
+    };
+  };
+}
+
 async function fetchWebApi(
   endpoint: string,
   method: HttpMethod,
-  body?: string,
+  body?: Body,
   total: number = 100,
   queryParams: QueryParams = {}
 ): Promise<ApiResponse> {
@@ -46,4 +72,4 @@ async function fetchWebApi(
   }
 }
 
-export { ApiResponse, fetchWebApi };
+export { ApiResponse, Body, fetchWebApi };

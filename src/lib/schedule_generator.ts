@@ -57,9 +57,7 @@ async function generateSchedule(
     availablePeople = _removeDuplicates(availablePeople, scheduledPeople);
     const scheduledPosition: PositionAssignment = {
       team_position_name: positionAssignment.team_position_name,
-      team_position_members: scheduledPeople.map(
-        (person) => person.person_name
-      ),
+      team_position_members: scheduledPeople,
     };
     scheduleTeamPositions.push(scheduledPosition);
   }
@@ -85,9 +83,15 @@ async function _removePeopleWithConflicts(
     for (const person of conflicts) {
       if (
         person.conflicts.length === 0 &&
-        assignment.team_position_members.includes(person.person_name)
+        assignment.team_position_members
+          .map((element) => element.person_name)
+          .includes(person.person_name)
       ) {
-        teamPositionAssignment.team_position_members.push(person.person_name);
+        const nonConflictingPerson: Person = {
+          person_id: person.person_id,
+          person_name: person.person_name,
+        };
+        teamPositionAssignment.team_position_members.push(nonConflictingPerson);
       }
     }
     availablePeople.push(teamPositionAssignment);
@@ -103,7 +107,7 @@ function _getPeopleWithHighestPriority(people: PositionAssignment): Person[] {
   const highestPriorityPeopleArray: Person[] = [];
   for (const person of people.team_position_members) {
     const personIndex: number = preferences.findIndex(
-      (element) => element.person_name === person
+      (element) => element.person_name === person.person_name
     );
     const personPriority: number = preferences[personIndex].priority;
     if (personPriority > highestPriority) {
@@ -143,12 +147,10 @@ function _removeDuplicates(
 ): PositionAssignment[] {
   for (const person of scheduledPeople) {
     for (const positionAssignment of people) {
-      if (
-        positionAssignment.team_position_members.includes(person.person_name)
-      ) {
+      if (positionAssignment.team_position_members.includes(person)) {
         const personIndex: number =
           positionAssignment.team_position_members.findIndex(
-            (element) => element === person.person_name
+            (person) => person.person_name === person.person_name
           );
         positionAssignment.team_position_members.splice(personIndex, 1);
       }
@@ -157,5 +159,7 @@ function _removeDuplicates(
 
   return people;
 }
+
+generateSchedule("2023-08-06");
 
 export { Schedule, generateSchedule };

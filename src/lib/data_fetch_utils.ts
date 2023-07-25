@@ -14,7 +14,7 @@ interface TeamPosition {
 }
 interface PositionAssignment {
   team_position_name: string;
-  team_position_members: string[];
+  team_position_members: Person[];
 }
 interface Plan {
   plan_id: string;
@@ -94,9 +94,7 @@ async function getTeamPositionAssignments(
       ) {
         for (const person of people) {
           if (assignment.relationships.person.data.id === person.person_id) {
-            teamPositionAssignment.team_position_members.push(
-              person.person_name
-            );
+            teamPositionAssignment.team_position_members.push(person);
           }
         }
       }
