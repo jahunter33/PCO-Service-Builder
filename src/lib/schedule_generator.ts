@@ -66,7 +66,7 @@ async function generateSchedule(
     plan_date: plan[0].plan_date,
     team_positions: scheduleTeamPositions,
   };
-  console.log(schedule);
+  console.log("Schedule: ", schedule);
   return schedule;
 }
 
@@ -141,25 +141,25 @@ function _randomizePeople(people: Person[], quantity: number): Person[] {
 }
 
 // function to remove people who have already been scheduled for a position from the list of available people
+//FIXME: After changing the team_position_members property of the PositionAssignment interface to an array of Person objects, this function no longer works
 function _removeDuplicates(
-  people: PositionAssignment[],
+  availablePeople: PositionAssignment[],
   scheduledPeople: Person[]
 ): PositionAssignment[] {
-  for (const person of scheduledPeople) {
-    for (const positionAssignment of people) {
-      if (positionAssignment.team_position_members.includes(person)) {
-        const personIndex: number =
-          positionAssignment.team_position_members.findIndex(
-            (person) => person.person_name === person.person_name
-          );
+  for (const scheduledPerson of scheduledPeople) {
+    for (const positionAssignment of availablePeople) {
+      const personIndex: number =
+        positionAssignment.team_position_members.findIndex(
+          (availablePerson) =>
+            availablePerson.person_id === scheduledPerson.person_id
+        );
+      if (personIndex !== -1) {
         positionAssignment.team_position_members.splice(personIndex, 1);
       }
     }
   }
 
-  return people;
+  return availablePeople;
 }
-
-generateSchedule("2023-08-06");
 
 export { Schedule, generateSchedule };

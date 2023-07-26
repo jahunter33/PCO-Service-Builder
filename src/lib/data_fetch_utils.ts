@@ -108,7 +108,6 @@ async function getTeamPositionAssignments(
 async function getPlan(date?: Date): Promise<Plan[]> {
   const plans: Plan[] = [];
   const targetDate: Date = date ? date : getNextSunday();
-  console.log("Getting plan...");
   const response: ApiResponse = await fetchWebApi(
     `services/v2/service_types/${SERVICE_TYPE_ID}/plans`,
     "GET",
@@ -116,6 +115,7 @@ async function getPlan(date?: Date): Promise<Plan[]> {
     100,
     { filter: "future" }
   );
+  console.log("Getting plan...");
   for (const plan of response.data) {
     const planDate = new Date(plan.attributes.sort_date);
     if (planDate.toISOString() === targetDate.toISOString()) {
