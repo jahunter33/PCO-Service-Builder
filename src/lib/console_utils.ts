@@ -1,7 +1,9 @@
 import { Schedule } from "./schedule_generator";
 //import { PositionAssignment } from "./data_fetch_utils";
 
+// used ANSI escape codes to colorize console output
 function printScheduleToConsole(schedule: Schedule): void {
+  //ANSI escape code for bold text
   console.log(
     "\n\x1b[1m%s\x1b[0m",
     "\tSchedule for the week of: " + _formatDate(schedule.plan_date)
@@ -19,6 +21,7 @@ function printScheduleToConsole(schedule: Schedule): void {
       positionMemberArray.push(person.person_name);
       positionMemberString = positionMemberArray.join(", ");
     }
+    //ANSI escape code for bold, green text
     console.log(
       "\t",
       teamPosition.team_position_name.padEnd(maxLength),
