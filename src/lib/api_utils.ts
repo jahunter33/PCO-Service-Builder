@@ -12,7 +12,7 @@ type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
 
 interface ApiResponse {
   id: string;
-  data: any; // Ideally, replace `any` with the actual structure you expect.
+  data: any; // ideally this would be a generic type but each api endpoint returns different data
 }
 
 interface Body {

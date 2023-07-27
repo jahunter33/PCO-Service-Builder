@@ -66,7 +66,6 @@ async function generateSchedule(
     plan_date: plan[0].plan_date,
     team_positions: scheduleTeamPositions,
   };
-  console.log("Schedule: ", schedule);
   return schedule;
 }
 
