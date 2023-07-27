@@ -20,17 +20,14 @@ async function main(): Promise<void> {
   const date: string = await askQuestion(
     "Please enter the date you would like, or press enter (YYYY-MM-DD format): "
   );
-
   let schedule: any;
   if (date === "") {
     schedule = await generateSchedule();
   } else {
     schedule = await generateSchedule(date);
   }
-
   if (schedule !== undefined) {
     printScheduleToConsole(schedule);
-
     const answer: string = await askQuestion(
       "Would you like to post this schedule? (y/n): "
     );
