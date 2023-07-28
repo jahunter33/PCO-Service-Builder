@@ -216,8 +216,6 @@ async function getNeededPositions(plan: Plan[]): Promise<NeededPositions[]> {
   }
   if (Object.keys(neededPositions).length === 0) {
     console.log("All positions are filled!");
-  } else {
-    console.log("Positions still needed: ", neededPositions);
   }
   return neededPositions;
 }

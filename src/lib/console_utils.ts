@@ -1,10 +1,14 @@
 import { Schedule } from "./schedule_generator";
 
-// used ANSI escape codes to colorize console output
+//ANSI escape code for BOLD and colored text
+const BOLD: string = "\x1b[1m";
+const GREEN: string = "\x1b[32m";
+const RED: string = "\x1b[31m";
+const RESET: string = "\x1b[0m";
+
 function printScheduleToConsole(schedule: Schedule): void {
-  //ANSI escape code for bold text
   console.log(
-    "\n\x1b[1m%s\x1b[0m",
+    `\n${BOLD}%s${RESET}`,
     "\tSchedule for the week of: " + _formatDate(schedule.plan_date)
   );
   console.log("\n");
@@ -18,15 +22,30 @@ function printScheduleToConsole(schedule: Schedule): void {
       positionMemberArray.push(person.person_name);
       positionMemberString = positionMemberArray.join(", ");
     }
-    //ANSI escape code for bold, green text
-    console.log(
-      "\t",
-      teamPosition.team_position_name.padEnd(maxLength),
-      "\t",
-      `\x1b[32m\x1b[1m${positionMemberString}\x1b[0m`
-    );
+    if (positionMemberString === "") {
+      console.log(
+        "\t",
+        teamPosition.team_position_name.padEnd(maxLength),
+        "\t",
+        `${BOLD}${RED}No available players${RESET}`
+      );
+    } else {
+      console.log(
+        "\t",
+        teamPosition.team_position_name.padEnd(maxLength),
+        "\t",
+        `${GREEN}${BOLD}${positionMemberString}${RESET}`
+      );
+    }
   }
   console.log("\n");
+}
+
+function printScheduleError(): void {
+  console.log(
+    `\t${BOLD}${RED}%s${RESET}\n`,
+    "No available players for any position. No schedule generated."
+  );
 }
 
 function _getDaySuffix(date: Date): string {
@@ -55,4 +74,4 @@ function _formatDate(dateStr: string): string {
   return formattedDate;
 }
 
-export { printScheduleToConsole };
+export { printScheduleToConsole, printScheduleError };

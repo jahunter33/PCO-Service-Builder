@@ -1,7 +1,10 @@
 import { ReadLine } from "readline";
 import { generateSchedule } from "./lib/schedule_generator";
 import { postSchedule } from "./lib/schedule_poster";
-import { printScheduleToConsole } from "./lib/console_utils";
+import {
+  printScheduleError,
+  printScheduleToConsole,
+} from "./lib/console_utils";
 
 const rl: ReadLine = require("readline").createInterface({
   input: process.stdin,
@@ -26,8 +29,22 @@ async function main(): Promise<void> {
   } else {
     schedule = await generateSchedule(date);
   }
+
+  let scheduledPeople: number = 0;
   if (schedule !== undefined) {
-    printScheduleToConsole(schedule);
+    for (const teamPosition of schedule.team_positions) {
+      for (let j = 0; j < teamPosition.team_position_members.length; j++) {
+        scheduledPeople++;
+      }
+    }
+  } else {
+    console.log("No schedule to post.");
+    rl.close();
+    return;
+  }
+
+  printScheduleToConsole(schedule);
+  if (scheduledPeople > 0) {
     const answer: string = await askQuestion(
       "Would you like to post this schedule? (y/n): "
     );
@@ -39,6 +56,7 @@ async function main(): Promise<void> {
       rl.close();
     }
   } else {
+    printScheduleError();
     console.log("No schedule to post.");
     rl.close();
   }

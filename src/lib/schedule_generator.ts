@@ -54,12 +54,20 @@ async function generateSchedule(
       peopleWithHighestPriority,
       position.quantity_needed
     );
-    availablePeople = _removeDuplicates(availablePeople, scheduledPeople);
-    const scheduledPosition: PositionAssignment = {
-      team_position_name: positionAssignment.team_position_name,
-      team_position_members: scheduledPeople,
-    };
-    scheduleTeamPositions.push(scheduledPosition);
+    if (scheduledPeople[0] !== undefined) {
+      availablePeople = _removeDuplicates(availablePeople, scheduledPeople);
+      const scheduledPosition: PositionAssignment = {
+        team_position_name: positionAssignment.team_position_name,
+        team_position_members: scheduledPeople,
+      };
+      scheduleTeamPositions.push(scheduledPosition);
+    } else {
+      const scheduledPosition: PositionAssignment = {
+        team_position_name: positionAssignment.team_position_name,
+        team_position_members: [],
+      };
+      scheduleTeamPositions.push(scheduledPosition);
+    }
   }
   const schedule: Schedule = {
     plan_id: plan[0].plan_id,
