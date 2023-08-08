@@ -8,7 +8,6 @@ interface QueryParams {
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
 
 interface ApiResponse {
-  id: string;
   data: any; // ideally this would be a generic type but each api endpoint returns different data
 }
 
