@@ -49,6 +49,7 @@ async function getPeople(): Promise<Person[]> {
     `services/v2/teams/${config.TEAM_ID}/people`,
     "GET"
   );
+  console.log(response);
   for (const person of response.data) {
     const peopleObj: Person = {
       person_id: person.id,
@@ -243,6 +244,7 @@ function getNextSunday(date: string | Date = new Date()): Date {
 }
 
 // function to get list of songs
+// FIXME: this function should get the songs with the proper tags and only pass those songs to the scheduler. Untagged songs should only be passed to the tagger function. It might be better to have those functions handle the filtering.
 async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
   const songs: Song[] = [];
   const response: ApiResponse = await fetchWebApi(
