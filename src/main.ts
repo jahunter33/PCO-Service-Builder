@@ -30,11 +30,12 @@ async function main(): Promise<void> {
     schedule = await generateSchedule(date);
   }
 
-  let scheduledPeople: number = 0;
+  let arePeopleScheduled: boolean = false;
   if (schedule !== undefined) {
     for (const teamPosition of schedule.team_positions) {
-      for (let j = 0; j < teamPosition.team_position_members.length; j++) {
-        scheduledPeople++;
+      if (teamPosition.team_position_members.length > 0) {
+        arePeopleScheduled = true;
+        break;
       }
     }
   } else {
@@ -43,8 +44,9 @@ async function main(): Promise<void> {
     return;
   }
 
+  // Print the schedule to the console
   printScheduleToConsole(schedule);
-  if (scheduledPeople > 0) {
+  if (arePeopleScheduled) {
     const answer: string = await askQuestion(
       "Would you like to post this schedule? (y/n): "
     );

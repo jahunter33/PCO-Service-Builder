@@ -1,9 +1,6 @@
 import config from "./config";
 import { Headers } from "cross-fetch";
 
-const APP_ID: string | undefined = config.APP_ID;
-const SECRET: string | undefined = config.SECRET;
-
 interface QueryParams {
   [key: string]: string | number | boolean;
 }
@@ -16,26 +13,28 @@ interface ApiResponse {
 }
 
 interface Body {
-  data: {
-    type: string;
-    attributes: {
-      status: string;
-      notes: string;
-      team_position_name: string;
-      prepare_notification: boolean;
-    };
-    relationships: {
-      person: {
-        data: {
-          type: string;
-          id: string;
-        };
+  data: TeamMembersBody;
+}
+
+interface TeamMembersBody {
+  type: string;
+  attributes: {
+    status: string;
+    notes: string;
+    team_position_name: string;
+    prepare_notification: boolean;
+  };
+  relationships: {
+    person: {
+      data: {
+        type: string;
+        id: string;
       };
-      team: {
-        data: {
-          type: string;
-          id: string | undefined;
-        };
+    };
+    team: {
+      data: {
+        type: string;
+        id: string | undefined;
       };
     };
   };
@@ -53,7 +52,10 @@ async function fetchWebApi(
   );
   const header: Headers = new Headers();
   header.append("Content-Type", "application/json");
-  header.append("Authorization", "Basic " + btoa(APP_ID + ":" + SECRET));
+  header.append(
+    "Authorization",
+    "Basic " + btoa(config.APP_ID + ":" + config.SECRET)
+  );
 
   queryParams.per_page = total;
   for (const key in queryParams) {
@@ -72,4 +74,4 @@ async function fetchWebApi(
   }
 }
 
-export { ApiResponse, Body, fetchWebApi };
+export { ApiResponse, QueryParams, Body, fetchWebApi };
