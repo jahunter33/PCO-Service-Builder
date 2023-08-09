@@ -49,7 +49,6 @@ async function getPeople(): Promise<Person[]> {
     `services/v2/teams/${config.TEAM_ID}/people`,
     "GET"
   );
-  console.log(response);
   for (const person of response.data) {
     const peopleObj: Person = {
       person_id: person.id,
