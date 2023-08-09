@@ -11,7 +11,6 @@ interface QueryParams {
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
 
 interface ApiResponse {
-  id: string;
   data: any; // ideally this would be a generic type but each api endpoint returns different data
 }
 
@@ -53,23 +52,43 @@ async function fetchWebApi(
   );
   const header: Headers = new Headers();
   header.append("Content-Type", "application/json");
-  header.append("Authorization", "Basic " + btoa(APP_ID + ":" + SECRET));
+  header.append(
+    "Authorization",
+    "Basic " + btoa(config.APP_ID + ":" + config.SECRET)
+  );
 
-  queryParams.per_page = total;
-  for (const key in queryParams) {
-    apiUrl.searchParams.append(key, queryParams[key].toString());
-  }
+  let results: any[] = [];
+  let fetchedSoFar: number = 0;
+  let offset: number = 0;
 
-  try {
-    const response: Response = await fetch(apiUrl.toString(), {
-      headers: header,
-      method: method,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    return response.json();
-  } catch (error) {
-    throw new Error(`Response unsuccessful: ${error}`);
+  while (fetchedSoFar < total) {
+    queryParams.per_page = total;
+    queryParams.offset = offset;
+    for (const key in queryParams) {
+      apiUrl.searchParams.append(key, queryParams[key].toString());
+    }
+    try {
+      const response: Response = await fetch(apiUrl.toString(), {
+        headers: header,
+        method: method,
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      //return response.json();
+      const data: any = await response.json();
+      if (data.data.length === 0 || fetchedSoFar >= total) {
+        break;
+      }
+      results = results.concat(data.data);
+      fetchedSoFar += data.data.length;
+
+      offset += total;
+    } catch (error) {
+      throw new Error(`Response unsuccessful: ${error}`);
+    }
   }
+  return {
+    data: results,
+  };
 }
 
-export { ApiResponse, Body, fetchWebApi };
+export { ApiResponse, QueryParams, Body, fetchWebApi };
