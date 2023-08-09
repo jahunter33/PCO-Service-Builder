@@ -2,13 +2,13 @@ import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
 
 interface Config {
-  APP_ID: string | undefined;
-  SECRET: string | undefined;
-  SERVICE_TYPE_ID: string | undefined;
-  TEAM_ID: string | undefined;
+  APP_ID: string;
+  SECRET: string;
+  SERVICE_TYPE_ID: string;
+  TEAM_ID: string;
 }
 
-const config: Config = {
+const config = {
   APP_ID: process.env.APP_ID,
   SECRET: process.env.SECRET,
   SERVICE_TYPE_ID: process.env.SERVICE_TYPE_ID,
@@ -25,4 +25,4 @@ for (let key in config) {
   }
 }
 
-export default config;
+export default config as Config;
