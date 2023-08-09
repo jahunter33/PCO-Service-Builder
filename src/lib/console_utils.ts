@@ -6,19 +6,6 @@ const GREEN: string = "\x1b[32m";
 const RED: string = "\x1b[31m";
 const RESET: string = "\x1b[0m";
 
-function printBoldWhite(text: string): void {
-  console.log(`${BOLD}%s${RESET}`, text);
-}
-function printTab(text: string): void {
-  console.log("\t%s", text);
-}
-function printBoldGreen(text: string): void {
-  console.log(`${BOLD}${GREEN}%s${RESET}`, text);
-}
-function printBoldRed(text: string): void {
-  console.log(`${BOLD}${RED}%s${RESET}`, text);
-}
-
 function printScheduleToConsole(schedule: Schedule): void {
   console.log(
     `\n${BOLD}%s${RESET}`,
@@ -87,4 +74,4 @@ function _formatDate(dateStr: string): string {
   return formattedDate;
 }
 
-export { printBoldWhite, printTab, printScheduleToConsole, printScheduleError };
+export { printScheduleToConsole, printScheduleError };

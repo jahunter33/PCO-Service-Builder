@@ -1,8 +1,9 @@
-import { get } from "http";
-import { ApiResponse, QueryParams, fetchWebApi } from "./api_utils";
+import { ApiResponse, fetchWebApi } from "./api_utils";
 import config from "./config";
+const SERVICE_TYPE_ID: string | undefined = config.SERVICE_TYPE_ID;
+const TEAM_ID: string | undefined = config.TEAM_ID;
 
-// interfaces for people return values
+// interfaces for return values
 interface Person {
   person_id: string;
   person_name: string;
@@ -32,21 +33,12 @@ interface BlockoutInterval {
   startsAt: Date;
   endsAt: Date;
 }
-
-//interfaces for song return values
-interface Song {
-  song_id: string;
-  song_title: string;
-  song_author: string;
-  ccli_number: string;
-}
-
 // function to get all people on a team
 async function getPeople(): Promise<Person[]> {
   const people: Person[] = [];
   console.log("Getting people...");
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/teams/${config.TEAM_ID}/people`,
+    `services/v2/teams/${TEAM_ID}/people`,
     "GET"
   );
   for (const person of response.data) {
@@ -65,7 +57,7 @@ async function getTeamPositions(): Promise<TeamPosition[]> {
   const teamPositions: TeamPosition[] = [];
   console.log("Getting team positions...");
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/teams/${config.TEAM_ID}/team_positions`,
+    `services/v2/teams/${TEAM_ID}/team_positions`,
     "GET"
   );
   for (const teamPosition of response.data) {
@@ -87,7 +79,7 @@ async function getTeamPositionAssignments(
   const teamPositionAssignments: PositionAssignment[] = [];
   console.log("Getting team position assignments...");
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/teams/${config.TEAM_ID}/person_team_position_assignments`,
+    `services/v2/teams/${TEAM_ID}/person_team_position_assignments`,
     "GET"
   );
   for (const teamPosition of teamPositions) {
@@ -117,7 +109,7 @@ async function getPlan(date?: Date): Promise<Plan[]> {
   const plans: Plan[] = [];
   const targetDate: Date = date ? date : getNextSunday();
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/service_types/${config.SERVICE_TYPE_ID}/plans`,
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans`,
     "GET",
     undefined,
     100,
@@ -147,7 +139,7 @@ async function getConflicts(
   const scheduleConflicts: Conflict[] = [];
   const dayInMilliseconds: number = 86400000;
   const statusResponse: ApiResponse = await fetchWebApi(
-    `services/v2/service_types/${config.SERVICE_TYPE_ID}/plans/${plan[0].plan_id}/team_members`,
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans/${plan[0].plan_id}/team_members`,
     "GET"
   );
   for (const person of people) {
@@ -206,14 +198,14 @@ async function getConflicts(
 async function getNeededPositions(plan: Plan[]): Promise<NeededPositions[]> {
   const neededPositions: NeededPositions[] = [];
   const serviceId: string = plan[0].plan_id;
-  // const teamIdString: string = config.TEAM_ID ? config.TEAM_ID : "";
+  const teamIdString: string = TEAM_ID ? TEAM_ID : "";
   console.log("Getting needed positions...");
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/service_types/${config.SERVICE_TYPE_ID}/plans/${serviceId}/needed_positions`,
+    `services/v2/service_types/${SERVICE_TYPE_ID}/plans/${serviceId}/needed_positions`,
     "GET",
     undefined,
     1000,
-    { "where[team_id]": config.TEAM_ID }
+    { "where[team_id]": teamIdString }
   );
   for (const position of response.data) {
     const neededPosition: NeededPositions = {
@@ -242,29 +234,6 @@ function getNextSunday(date: string | Date = new Date()): Date {
   return nextSunday;
 }
 
-// function to get list of songs
-// FIXME: this function should get the songs with the proper tags and only pass those songs to the scheduler. Untagged songs should only be passed to the tagger function. It might be better to have those functions handle the filtering.
-async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
-  const songs: Song[] = [];
-  const response: ApiResponse = await fetchWebApi(
-    `services/v2/songs`,
-    "GET",
-    undefined,
-    1000,
-    { hidden: "false", ...queryParams }
-  );
-  for (const song of response.data) {
-    const songObj: Song = {
-      song_id: song.id,
-      song_title: song.attributes.title,
-      song_author: song.attributes.author,
-      ccli_number: song.attributes.ccli_number,
-    };
-    songs.push(songObj);
-  }
-  return songs;
-}
-
 export {
   Person,
   TeamPosition,
@@ -272,7 +241,6 @@ export {
   Plan,
   Conflict,
   NeededPositions,
-  Song,
   getPeople,
   getTeamPositions,
   getTeamPositionAssignments,
@@ -280,5 +248,4 @@ export {
   getConflicts,
   getNeededPositions,
   getNextSunday,
-  getSongs,
 };
