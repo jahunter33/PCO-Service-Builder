@@ -20,3 +20,10 @@ function createPreferences(people: Person[]): void {
   }
   writeJson(preferences, "preferences.json");
 }
+
+async function main(): Promise<void> {
+  const people: Person[] = await getPeople();
+  createPreferences(people);
+}
+
+main();

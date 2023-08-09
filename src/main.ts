@@ -64,4 +64,7 @@ async function main(): Promise<void> {
   }
 }
 
+//getPeople();
+//songTagger();
+main();
 main();
