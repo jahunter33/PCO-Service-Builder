@@ -1,4 +1,3 @@
-import { get } from "http";
 import { ApiResponse, QueryParams, fetchWebApi } from "./api_utils";
 import config from "./config";
 

@@ -1,9 +1,6 @@
 import config from "./config";
 import { Headers } from "cross-fetch";
 
-const APP_ID: string | undefined = config.APP_ID;
-const SECRET: string | undefined = config.SECRET;
-
 interface QueryParams {
   [key: string]: string | number | boolean;
 }
