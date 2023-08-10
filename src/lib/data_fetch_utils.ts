@@ -1,6 +1,7 @@
 import { get } from "http";
 import { ApiResponse, QueryParams, fetchWebApi } from "./api_utils";
 import config from "./config";
+import { writeJson } from "./debug_utils";
 
 // interfaces for people return values
 interface Person {
@@ -38,6 +39,7 @@ interface Song {
   song_id: string;
   song_title: string;
   song_author: string;
+  themes: string[];
   ccli_number: string;
 }
 
@@ -250,18 +252,25 @@ async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
     `services/v2/songs`,
     "GET",
     undefined,
-    1000,
-    { hidden: "false", ...queryParams }
+    100,
+    { "where[hidden]": false, ...queryParams }
   );
   for (const song of response.data) {
+    let themeArray: string[] = [];
+    if (song.attributes.themes !== null) {
+      const theme: string = song.attributes.themes;
+      themeArray = theme.split(", ");
+    }
     const songObj: Song = {
       song_id: song.id,
       song_title: song.attributes.title,
       song_author: song.attributes.author,
+      themes: themeArray,
       ccli_number: song.attributes.ccli_number,
     };
     songs.push(songObj);
   }
+  writeJson(songs, "songs.json");
   return songs;
 }
 

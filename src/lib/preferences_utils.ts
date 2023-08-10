@@ -8,7 +8,7 @@ interface Preferences {
 }
 
 function createPreferences(people: Person[]): void {
-  const preferences: any[] = [];
+  const preferences: Preferences[] = [];
   for (const person of people) {
     const preference: Preferences = {
       person_id: person.person_id,

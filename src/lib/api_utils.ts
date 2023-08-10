@@ -1,3 +1,4 @@
+import { off } from "process";
 import config from "./config";
 import { Headers } from "cross-fetch";
 
@@ -44,7 +45,7 @@ async function fetchWebApi(
   endpoint: string,
   method: HttpMethod,
   body?: Body,
-  total: number = 100,
+  limit: number = 100,
   queryParams: QueryParams = {}
 ): Promise<ApiResponse> {
   const apiUrl: URL = new URL(
@@ -60,9 +61,10 @@ async function fetchWebApi(
   let results: any[] = [];
   let fetchedSoFar: number = 0;
   let offset: number = 0;
+  let total: number;
 
-  while (fetchedSoFar < total) {
-    queryParams.per_page = total;
+  do {
+    queryParams.per_page = limit;
     queryParams.offset = offset;
     for (const key in queryParams) {
       apiUrl.searchParams.append(key, queryParams[key].toString());
@@ -73,19 +75,18 @@ async function fetchWebApi(
         method: method,
         body: body ? JSON.stringify(body) : undefined,
       });
-      //return response.json();
       const data: any = await response.json();
+      fetchedSoFar += data.data.length;
+      total = data.meta.total_count;
+      results = results.concat(data.data);
       if (data.data.length === 0 || fetchedSoFar >= total) {
         break;
       }
-      results = results.concat(data.data);
-      fetchedSoFar += data.data.length;
-
-      offset += total;
+      offset += limit;
     } catch (error) {
       throw new Error(`Response unsuccessful: ${error}`);
     }
-  }
+  } while (true);
   return {
     data: results,
   };

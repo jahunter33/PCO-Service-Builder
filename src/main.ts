@@ -7,7 +7,7 @@ import {
 } from "./lib/console_utils";
 import { printBoldWhite, printTab } from "./lib/console_utils";
 
-import { getPeople } from "./lib/data_fetch_utils";
+import { getSongs } from "./lib/data_fetch_utils";
 
 const rl: ReadLine = require("readline").createInterface({
   input: process.stdin,
@@ -83,5 +83,5 @@ async function main(): Promise<void> {
     rl.close();
   }
 }
-
-main();
+getSongs();
+//main();
