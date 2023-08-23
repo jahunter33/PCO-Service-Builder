@@ -41,6 +41,7 @@ interface Song {
   song_author: string;
   themes: string[];
   ccli_number: string;
+  last_scheduled_at: Date;
 }
 
 // function to get all people on a team
@@ -246,14 +247,14 @@ function getNextSunday(date: string | Date = new Date()): Date {
 
 // function to get list of songs
 // FIXME: this function should get the songs with the proper tags and only pass those songs to the scheduler. Untagged songs should only be passed to the tagger function. It might be better to have those functions handle the filtering.
-async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
+async function getSongs(endpoint?: string): Promise<Song[]> {
   const songs: Song[] = [];
   const response: ApiResponse = await fetchWebApi(
-    `services/v2/songs`,
+    `services/v2/songs${endpoint ? endpoint : ""}`,
     "GET",
     undefined,
     100,
-    { "where[hidden]": false, ...queryParams }
+    { "where[hidden]": false }
   );
   console.log("Getting songs...");
   for (const song of response.data) {
@@ -268,9 +269,11 @@ async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
       song_author: song.attributes.author,
       themes: themeArray,
       ccli_number: song.attributes.ccli_number,
+      last_scheduled_at: song.attributes.last_scheduled_at,
     };
     songs.push(songObj);
   }
+  writeJson(songs, "songs.json");
   console.log("Songs retrieved.");
 
   return songs;

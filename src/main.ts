@@ -5,7 +5,6 @@ import {
   printScheduleError,
   printScheduleToConsole,
 } from "./lib/console_utils";
-import { printBoldWhite, printTab } from "./lib/console_utils";
 import { generateSetlist } from "./lib/setlist_generator";
 import { getSongs } from "./lib/data_fetch_utils";
 
@@ -20,23 +19,6 @@ function askQuestion(question: string): Promise<string> {
       resolve(answer);
     });
   });
-}
-
-async function songTagger(): Promise<void> {
-  printBoldWhite("\nWelcome to the song tagging assistant!");
-  printTab(
-    "This tool will, by default, tag all songs in the database that have been played at least once within the last year."
-  );
-  printTab(
-    "If you would like to change this, please enter a number of years (less than 10) to look back. Otherwise, press enter to continue."
-  );
-  //promt user for number of years to look back
-  //if user enters a number, use that number
-  //if user presses enter, use default value of 1
-  //if user enters a non-number, prompt again
-  //if user enters a negative number, prompt again
-  //if user enters a number greater than 10, prompt again
-  //if user enters a decimal, prompt again
 }
 
 async function main(): Promise<void> {
@@ -97,4 +79,5 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+getSongs();
+//main();
