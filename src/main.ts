@@ -6,7 +6,7 @@ import {
   printScheduleToConsole,
 } from "./lib/console_utils";
 import { printBoldWhite, printTab } from "./lib/console_utils";
-
+import { generateSetlist } from "./lib/setlist_generator";
 import { getSongs } from "./lib/data_fetch_utils";
 
 const rl: ReadLine = require("readline").createInterface({
@@ -60,28 +60,41 @@ async function main(): Promise<void> {
     }
   } else {
     console.log("No schedule to post.");
-    rl.close();
-    return;
   }
 
   // Print the schedule to the console
-  printScheduleToConsole(schedule);
   if (arePeopleScheduled) {
+    printScheduleToConsole(schedule);
     const answer: string = await askQuestion(
       "Would you like to post this schedule? (y/n): "
     );
     if (answer === "y") {
       await postSchedule(schedule);
-      rl.close();
     } else {
       console.log("Schedule not posted.");
       rl.close();
+      return;
     }
+  }
+
+  // Print the setlist to the console
+  if (arePeopleScheduled) {
+    const setlistAnswer: string = await askQuestion(
+      "Would you like to generate a setlist? (y/n): "
+    );
+    if (setlistAnswer === "y") {
+      await generateSetlist();
+    }
+    rl.close();
   } else {
-    printScheduleError();
-    console.log("No schedule to post.");
+    const setlistAnswer: string = await askQuestion(
+      "There is no schedule currently to generate a setlist. Would you like to generate a setlist anyway? (y/n): "
+    );
+    if (setlistAnswer === "y") {
+      await generateSetlist();
+    }
     rl.close();
   }
 }
-getSongs();
-//main();
+
+main();

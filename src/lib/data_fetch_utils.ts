@@ -1,6 +1,6 @@
-import { get } from "http";
 import { ApiResponse, QueryParams, fetchWebApi } from "./api_utils";
 import config from "./config";
+
 import { writeJson } from "./debug_utils";
 
 // interfaces for people return values
@@ -255,6 +255,7 @@ async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
     100,
     { "where[hidden]": false, ...queryParams }
   );
+  console.log("Getting songs...");
   for (const song of response.data) {
     let themeArray: string[] = [];
     if (song.attributes.themes !== null) {
@@ -270,7 +271,8 @@ async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
     };
     songs.push(songObj);
   }
-  writeJson(songs, "songs.json");
+  console.log("Songs retrieved.");
+
   return songs;
 }
 

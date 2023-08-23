@@ -1,9 +1,5 @@
-import { off } from "process";
 import config from "./config";
 import { Headers } from "cross-fetch";
-
-const APP_ID: string | undefined = config.APP_ID;
-const SECRET: string | undefined = config.SECRET;
 
 interface QueryParams {
   [key: string]: string | number | boolean;
@@ -48,9 +44,6 @@ async function fetchWebApi(
   limit: number = 100,
   queryParams: QueryParams = {}
 ): Promise<ApiResponse> {
-  const apiUrl: URL = new URL(
-    `https://api.planningcenteronline.com/${endpoint}`
-  );
   const header: Headers = new Headers();
   header.append("Content-Type", "application/json");
   header.append(
@@ -61,9 +54,12 @@ async function fetchWebApi(
   let results: any[] = [];
   let fetchedSoFar: number = 0;
   let offset: number = 0;
-  let total: number;
+  let total: number = 0;
 
   do {
+    const apiUrl: URL = new URL(
+      `https://api.planningcenteronline.com/${endpoint}`
+    );
     queryParams.per_page = limit;
     queryParams.offset = offset;
     for (const key in queryParams) {
@@ -75,6 +71,11 @@ async function fetchWebApi(
         method: method,
         body: body ? JSON.stringify(body) : undefined,
       });
+      if (method === "POST") {
+        return {
+          data: response,
+        };
+      }
       const data: any = await response.json();
       fetchedSoFar += data.data.length;
       total = data.meta.total_count;
