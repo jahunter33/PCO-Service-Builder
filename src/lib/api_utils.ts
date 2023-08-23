@@ -41,12 +41,9 @@ async function fetchWebApi(
   endpoint: string,
   method: HttpMethod,
   body?: Body,
-  total: number = 100,
+  limit: number = 100,
   queryParams: QueryParams = {}
 ): Promise<ApiResponse> {
-  const apiUrl: URL = new URL(
-    `https://api.planningcenteronline.com/${endpoint}`
-  );
   const header: Headers = new Headers();
   header.append("Content-Type", "application/json");
   header.append(
@@ -57,9 +54,13 @@ async function fetchWebApi(
   let results: any[] = [];
   let fetchedSoFar: number = 0;
   let offset: number = 0;
+  let total: number = 0;
 
-  while (fetchedSoFar < total) {
-    queryParams.per_page = total;
+  do {
+    const apiUrl: URL = new URL(
+      `https://api.planningcenteronline.com/${endpoint}`
+    );
+    queryParams.per_page = limit;
     queryParams.offset = offset;
     for (const key in queryParams) {
       apiUrl.searchParams.append(key, queryParams[key].toString());
@@ -70,19 +71,23 @@ async function fetchWebApi(
         method: method,
         body: body ? JSON.stringify(body) : undefined,
       });
-      //return response.json();
+      if (method === "POST") {
+        return {
+          data: response,
+        };
+      }
       const data: any = await response.json();
+      fetchedSoFar += data.data.length;
+      total = data.meta.total_count;
+      results = results.concat(data.data);
       if (data.data.length === 0 || fetchedSoFar >= total) {
         break;
       }
-      results = results.concat(data.data);
-      fetchedSoFar += data.data.length;
-
-      offset += total;
+      offset += limit;
     } catch (error) {
       throw new Error(`Response unsuccessful: ${error}`);
     }
-  }
+  } while (true);
   return {
     data: results,
   };
