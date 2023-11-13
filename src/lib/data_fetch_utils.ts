@@ -32,6 +32,12 @@ interface BlockoutInterval {
   endsAt: Date;
 }
 
+interface Schedule {
+  plan_id: string;
+  plan_date: string;
+  team_positions: PositionAssignment[];
+}
+
 //interfaces for song return values
 interface Song {
   song_id: string;
@@ -241,6 +247,39 @@ function getNextSunday(date: string | Date = new Date()): Date {
   return nextSunday;
 }
 
+async function getCurrentSchedule(plan: Plan[]): Promise<Schedule> {
+  const teamPositionAssignments: PositionAssignment[] = [];
+  const response: ApiResponse = await fetchWebApi(
+    `services/v2/service_types/${config.SERVICE_TYPE_ID}/plans/${plan[0].plan_id}/team_members`,
+    "GET"
+  );
+  if (response.data) {
+    for (const teamMember of response.data) {
+      if (teamMember.relationships.team.data.id === config.TEAM_ID) {
+        const people: Person[] = [];
+        const person: Person = {
+          person_id: "",
+          person_name: teamMember.attributes.name,
+        };
+        people.push(person);
+        const positionAssignment: PositionAssignment = {
+          team_position_name: teamMember.attributes.team_position_name,
+          team_position_members: people,
+        };
+        teamPositionAssignments.push(positionAssignment);
+      }
+    }
+  } else {
+    console.log("Response data is undefined.");
+  }
+  const currentSchedule: Schedule = {
+    plan_id: plan[0].plan_id,
+    plan_date: plan[0].plan_date,
+    team_positions: teamPositionAssignments,
+  };
+  return currentSchedule;
+}
+
 // function to get list of songs
 async function getSongs(queryParams: QueryParams = {}): Promise<Song[]> {
   const songs: Song[] = [];
@@ -270,6 +309,7 @@ export {
   Plan,
   Conflict,
   NeededPositions,
+  Schedule,
   Song,
   getPeople,
   getTeamPositions,
@@ -278,5 +318,6 @@ export {
   getConflicts,
   getNeededPositions,
   getNextSunday,
+  getCurrentSchedule,
   getSongs,
 };
