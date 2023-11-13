@@ -109,7 +109,7 @@ async function _removePeopleWithConflicts(
 // function to get people with highest priority
 // FIXME: this function can't handle a scenario where there are not enough people of highest priority to fill a position
 function _getPeopleWithHighestPriority(people: PositionAssignment): Person[] {
-  const preferences: any[] = require("./data/preferences.json");
+  const preferences: any[] = require("../../data/preferences.json");
   let highestPriority: number = 1;
   const highestPriorityPeopleArray: Person[] = [];
   for (const person of people.team_position_members) {
