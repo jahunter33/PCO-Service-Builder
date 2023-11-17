@@ -1,0 +1,59 @@
+html {
+  font-size: 10px; /* px means "pixels": the base font size is now 10 pixels high */
+  font-family: "Open Sans", sans-serif; /* this should be the rest of the output you got from Google Fonts */
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(140deg, #c5d6b5, #a0a1ab);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.translucent-box {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.7); /* 70% opacity */
+  padding: 20px;
+  width: 70%;
+  min-height: 50vh;
+  border-radius: 2px;
+}
+
+.header-rectangle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5vh; /* You can adjust this value as needed */
+  width: 100%; /* 50% of the viewport width */
+  background-color: #ffffff; /* Opaque white */
+  border-radius: 2px;
+}
+
+.left-column {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%; /* 30% of the width of its parent element */
+  min-width: 300px;
+  max-width: 450px;
+  background-color: #ffffff; /* Opaque white */
+  border-radius: 2px;
+}
+
+.calendar {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 20%;
+  border-collapse: separate;
+  border-spacing: 20px 20px;
+}
+
+.calendar thead {
+  color: #c5d6b5;
+  font-weight: bold;
+}

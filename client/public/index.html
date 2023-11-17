@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <link href="../styles/styles.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+    />
+
+    <script src="../dist/bundle.js"></script>
+  </head>
+  <body>
+    <div class="translucent-box">
+      <div class="header-rectangle"></div>
+      <div class="left-column">
+        <!-- Calendar element -->
+        <div class="calendar-container">
+          <!-- Month, Year display at top -->
+          <p class="calendar-current-date"></p>
+          <!-- Actual Calendar -->
+          <table class="calendar">
+            <thead class="calendar-header">
+              <tr class="cal-weekdays">
+                <th class="cal-weekday">Sun</th>
+                <th class="cal-weekday">Mon</th>
+                <th class="cal-weekday">Tue</th>
+                <th class="cal-weekday">Wed</th>
+                <th class="cal-weekday">Thu</th>
+                <th class="cal-weekday">Fri</th>
+                <th class="cal-weekday">Sat</th>
+              </tr>
+            </thead>
+            <tbody class="calendar-dates"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<div class="calendar">
+  <input type="date" id="calendar" />
+</div>
+
+<div class="button">
+  <button id="schedule-generate-button">generate a schedule</button>
+</div>
+
+<div class="button">
+  <button id="schedule-getter-button">get the current schedule</button>
+</div>
+
+<div class="schedule-container" id="schedule-container"></div>
