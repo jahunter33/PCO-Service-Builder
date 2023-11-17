@@ -12,6 +12,11 @@ body {
   align-items: center;
 }
 
+header .calendar-current-date {
+  font-weight: 500;
+  font-size: 1.45rem;
+}
+
 .translucent-box {
   position: relative;
   background-color: rgba(255, 255, 255, 0.7); /* 70% opacity */

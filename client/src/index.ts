@@ -47,10 +47,13 @@ function generateCalendar() {
   let year = date.getFullYear();
   let month = date.getMonth();
 
-  let day = document.querySelector(".calendar-dates") as HTMLElement;
-  let currentDate = document.querySelector(
+  const day = document.querySelector(".calendar-dates") as HTMLElement;
+  const currentDate = document.querySelector(
     ".calendar-current-date"
   ) as HTMLElement;
+  const prenextIcons = document.querySelectorAll(
+    ".calendar-navigation span"
+  ) as NodeListOf<HTMLElement>;
 
   const months = [
     "January",
@@ -116,4 +119,24 @@ function generateCalendar() {
   };
 
   manipulate();
+
+  // Attach an event listener to each icon
+  prenextIcons.forEach((icon) => {
+    icon.addEventListener("click", () => {
+      // Check if icon clicked is calendar-prev or calendar-next
+      month = icon.id === "calendar-prev" ? month - 1 : month + 1;
+
+      // Check if month is out of range, set new date according to the next or previous year
+      if (month < 0 || month > 11) {
+        date = new Date(year, month, new Date().getDate());
+        year = date.getFullYear();
+        month = date.getMonth();
+      } else {
+        // Set date to current date
+        date = new Date();
+      }
+      // Update calendar display
+      manipulate();
+    });
+  });
 }

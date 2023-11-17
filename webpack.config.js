@@ -3,9 +3,9 @@ const path = require("path");
 
 const config = {
   mode: "development",
-  entry: "./src/index.ts",
+  entry: "./client/src/index.ts",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "client/dist"),
     filename: "bundle.js",
   },
   module: {

@@ -4,6 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
+    "build": "webpack",
     "start": "ts-node src/server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
