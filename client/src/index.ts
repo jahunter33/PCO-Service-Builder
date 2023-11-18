@@ -7,8 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function main() {
-  generateCalendar();
+  initializeCalendar();
 
+  // add event listeners to calendar dates
+  initializeCalendarEvents();
   document
     .getElementById("schedule-generate-button")
     ?.addEventListener("click", async () => {
@@ -42,7 +44,7 @@ async function main() {
     });
 }
 
-function generateCalendar() {
+function initializeCalendar(): void {
   let date = new Date();
   let year = date.getFullYear();
   let month = date.getMonth();
@@ -55,7 +57,7 @@ function generateCalendar() {
     ".calendar-navigation span"
   ) as NodeListOf<HTMLElement>;
 
-  const months = [
+  const months: Array<string> = [
     "January",
     "February",
     "March",
@@ -137,6 +139,18 @@ function generateCalendar() {
       }
       // Update calendar display
       manipulate();
+    });
+  });
+}
+
+// adds event listeners to each day in calendar
+function initializeCalendarEvents(): void {
+  const calendarDays = document.querySelectorAll(".calendar-dates tr td");
+  calendarDays.forEach((day) => {
+    day.addEventListener("click", () => {
+      if (day.classList.contains("active")) {
+        day.classList.replace("active", "today-active");
+      }
     });
   });
 }

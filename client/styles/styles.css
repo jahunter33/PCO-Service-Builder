@@ -12,11 +12,6 @@ body {
   align-items: center;
 }
 
-header .calendar-current-date {
-  font-weight: 500;
-  font-size: 1.45rem;
-}
-
 .translucent-box {
   position: relative;
   background-color: rgba(255, 255, 255, 0.7); /* 70% opacity */
@@ -42,23 +37,79 @@ header .calendar-current-date {
   left: 0;
   height: 100%;
   width: 40%; /* 30% of the width of its parent element */
-  min-width: 300px;
+  min-width: 400px;
   max-width: 450px;
   background-color: #ffffff; /* Opaque white */
   border-radius: 2px;
 }
 
+.calendar-navigation {
+  text-align: center;
+}
+
+.calendar-navigation span,
+.calendar-navigation p {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.calendar-navigation .calendar-current-date,
+.symbols {
+  font-size: 20px;
+}
+
+.calendar-navigation .calendar-current-date {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.calendar-navigation .symbols {
+  cursor: pointer;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 9px;
+  padding-right: 9px;
+  font-weight: 900;
+  background-color: rgb(116, 80, 139);
+  color: white;
+  border-radius: 100%;
+}
+
 .calendar {
+  table-layout: fixed;
   position: absolute;
   top: 10%;
   left: 10%;
   width: 80%;
   height: 20%;
   border-collapse: separate;
-  border-spacing: 20px 20px;
+  border-spacing: 10px 10px;
 }
 
-.calendar thead {
+.calendar-header {
   color: #c5d6b5;
   font-weight: bold;
+  font-size: 12px;
+}
+
+.calendar-dates {
+  cursor: pointer;
+  font-weight: 800;
+  text-align: center;
+}
+
+.inactive {
+  color: #c0c0c0;
+  font-weight: 100;
+}
+
+.active {
+  padding: 5px;
+}
+
+.today-active {
+  padding: 5px;
+  border-radius: 10px;
+  background-color: rgb(116, 80, 139);
+  color: white;
 }
