@@ -1,6 +1,6 @@
 html {
-  font-size: 10px; /* px means "pixels": the base font size is now 10 pixels high */
-  font-family: "Open Sans", sans-serif; /* this should be the rest of the output you got from Google Fonts */
+  font-size: 10px;
+  font-family: "Open Sans", sans-serif;
 }
 
 body {
@@ -19,13 +19,16 @@ body {
   width: 70%;
   min-height: 50vh;
   border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header-rectangle {
   position: absolute;
   top: 0;
   left: 0;
-  height: 5vh; /* You can adjust this value as needed */
+  height: 5vh;
   width: 100%; /* 50% of the viewport width */
   background-color: #ffffff; /* Opaque white */
   border-radius: 2px;
@@ -33,6 +36,11 @@ body {
 
 .left-column {
   position: absolute;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  flex-direction: column;
+  gap: 5%;
   top: 0;
   left: 0;
   height: 100%;
@@ -114,10 +122,37 @@ body {
   color: white;
 }
 
+.calendar-container {
+  margin-top: 1%;
+}
+
 .message-container {
   display: block;
 }
 
 .message {
   text-align: center;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-container {
+  display: flex;
+  height: 100%;
+}
+
+.button {
+  text-align: center;
+  padding: 10px;
+}
+
+.padding-box {
+  height: 100%;
+  width: 40%;
+  min-width: 400px;
+  max-width: 450px;
 }

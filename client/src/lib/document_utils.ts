@@ -1,9 +1,7 @@
 import { ApiResponse } from "./api_utils";
 
 function printScheduleToDocument(schedule: ApiResponse): void {
-  const scheduleContainer = document.getElementById(
-    "schedule-container"
-  ) as HTMLElement;
+  const scheduleContainer = document.getElementById("schedule") as HTMLElement;
 
   const positionMemberMap: Map<string, string[]> = new Map();
 

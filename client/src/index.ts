@@ -1,6 +1,30 @@
+/**
+ * Ideas:
+ *
+ *
+ * Maybe it could check to see if the next service corresponds with the selected
+ * date, and if not, the message text says "There is no plan for the date of [],
+ * but would you like to generate a plan for the next service on []?
+ *
+ * the logic to print the date to the screen will be similar logic to get the
+ * date over to the schedule generator
+ *
+ * when you click on a date not in this month the selection goes away. it should switch
+ * to that month and the date should be selected appropriately
+ *
+ */
+
 import { ApiResponse } from "./lib/api_utils";
 import { printScheduleToDocument } from "./lib/document_utils";
 import { getSchedule, generateSchedule } from "./lib/data_fetch_utils";
+
+interface GlobalDate {
+  date: string;
+}
+
+const globalDate: GlobalDate = {
+  date: "",
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   main();
@@ -9,25 +33,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function main(): void {
   // Initialize calendar
   initializeCalendar();
-
-  // set up schedule generator
-  initializeGenerator();
-
-  document
-    .getElementById("schedule-getter-button")
-    ?.addEventListener("click", async () => {
-      try {
-        const calendar = document.getElementById(
-          "calendar"
-        ) as HTMLInputElement;
-        const date: string = calendar.value;
-        const schedule: ApiResponse = await getSchedule(date);
-        console.log(schedule);
-        printScheduleToDocument(schedule);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    });
+  // set up schedule buttons
+  initializeScheduler();
 }
 
 function initializeCalendar(): void {
@@ -111,8 +118,11 @@ function initializeCalendar(): void {
       ".calendar-dates tr td"
     );
 
-    let formattedDate = formatDate(date);
-    console.log(formattedDate);
+    // Initial date and last clicked date printed to screen
+    let formattedDate: string = formatDate(date);
+    let selectedDate = document.getElementById("selected-date") as HTMLElement;
+    selectedDate.innerHTML = formattedDate;
+    globalDate.date = formattedDate;
 
     calendarDays.forEach((day) => {
       day.addEventListener("click", () => {
@@ -125,14 +135,12 @@ function initializeCalendar(): void {
         if (day.classList.contains("active")) {
           day.classList.replace("active", "today-active");
 
-          // FIXME: prints wrong date when year changes. Should always default to
-          // the original date.
-
           //code to change formattedDate to the current one
           const newDay = day.innerHTML;
           date = new Date(`${month + 1} ${newDay}, ${year}`);
           formattedDate = formatDate(date);
-          console.log(formattedDate);
+          selectedDate.innerHTML = formattedDate;
+          globalDate.date = formattedDate;
         }
       });
     });
@@ -145,33 +153,35 @@ function initializeCalendar(): void {
     icon.addEventListener("click", () => {
       // Check if icon clicked is calendar-prev or calendar-next
       month = icon.id === "calendar-prev" ? month - 1 : month + 1;
-
-      // Check if month is out of range, set new date according to the next or previous year
+      // Check if month is out of range
       if (month < 0 || month > 11) {
-        date = new Date(year, month, new Date().getDate());
-        year = date.getFullYear();
-        month = date.getMonth();
-      } else {
-        // Set date to current date
-        date = new Date();
+        let newDate = new Date(year, month, new Date().getDate());
+        year = newDate.getFullYear();
+        month = newDate.getMonth();
       }
-      // Update calendar display
       manipulate();
     });
   });
 }
 
-function initializeGenerator(): void {
+function initializeScheduler(): void {
+  const date: string = convertDateFormat(globalDate.date);
   document
     .getElementById("schedule-generate-button")
     ?.addEventListener("click", async () => {
       try {
-        const calendar = document.getElementById(
-          "calendar"
-        ) as HTMLInputElement;
-        const date: string = calendar.value;
         const schedule: ApiResponse = await generateSchedule(date);
-        console.log(schedule);
+        printScheduleToDocument(schedule);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    });
+
+  document
+    .getElementById("schedule-getter-button")
+    ?.addEventListener("click", async () => {
+      try {
+        const schedule: ApiResponse = await getSchedule(date);
         printScheduleToDocument(schedule);
       } catch (error) {
         console.error("Error: ", error);
@@ -179,19 +189,10 @@ function initializeGenerator(): void {
     });
 }
 
-/**
- *
- *
- *
- * Maybe it could check to see if the next service corresponds with the selected
- * date, and if not, the message text says "There is no plan for the date of [], but would
- * you like to generate a plan for the next service on []?
- *
- * the logic to print the date to the screen will be similar logic to get the date over to
- * the schedule generator
- *
- *
- */
+function convertDateFormat(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toISOString().split("T")[0];
+}
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("en-US", {
