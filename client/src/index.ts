@@ -12,6 +12,7 @@
  * when you click on a date not in this month the selection goes away. it should switch
  * to that month and the date should be selected appropriately
  *
+ *
  */
 
 import { ApiResponse } from "./lib/api_utils";
@@ -165,11 +166,11 @@ function initializeCalendar(): void {
 }
 
 function initializeScheduler(): void {
-  const date: string = convertDateFormat(globalDate.date);
   document
     .getElementById("schedule-generate-button")
     ?.addEventListener("click", async () => {
       try {
+        const date: string = convertDateFormat(globalDate.date);
         const schedule: ApiResponse = await generateSchedule(date);
         printScheduleToDocument(schedule);
       } catch (error) {
@@ -181,6 +182,7 @@ function initializeScheduler(): void {
     .getElementById("schedule-getter-button")
     ?.addEventListener("click", async () => {
       try {
+        const date: string = convertDateFormat(globalDate.date);
         const schedule: ApiResponse = await getSchedule(date);
         printScheduleToDocument(schedule);
       } catch (error) {
