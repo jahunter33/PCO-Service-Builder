@@ -165,6 +165,7 @@ td {
 
 .message {
   text-align: center;
+  display: none;
 }
 
 .button-container {
