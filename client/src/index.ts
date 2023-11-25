@@ -173,6 +173,11 @@ function initializeScheduler(): void {
         const date: string = convertDateFormat(globalDate.date);
         const schedule: ApiResponse = await generateSchedule(date);
         printScheduleToDocument(schedule);
+        if (schedule) {
+          document
+            .getElementById("schedule-post-button")
+            ?.removeAttribute("disabled");
+        }
       } catch (error) {
         console.error("Error: ", error);
       }
@@ -188,6 +193,14 @@ function initializeScheduler(): void {
       } catch (error) {
         console.error("Error: ", error);
       }
+    });
+
+  document
+    .getElementById("schedule-post-button")
+    ?.addEventListener("click", async () => {
+      document
+        .getElementById("schedule-post-button")
+        ?.setAttribute("disabled", "disabled");
     });
 }
 

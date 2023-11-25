@@ -24,16 +24,18 @@ function printScheduleToDocument(schedule: ApiResponse): void {
 
   let displayString: string = "";
   for (const positionName of sortedPositionNames) {
-    displayString += positionName + "\n";
+    //displayString += positionName + "\n";
+    displayString += `<p class="team-position">${positionName}</p>`;
     const members: string[] | undefined = positionMemberMap.get(positionName);
     if (members) {
       for (const member of members) {
-        displayString += "-" + member + "\n";
+        // displayString += "-" + member + "\n";
+        displayString += `<p class="band-member">${member}</p>`;
       }
     }
-    displayString += "\n";
+    //displayString += "\n";
   }
-  scheduleContainer.innerText = displayString.trim();
+  scheduleContainer.innerHTML = displayString;
 }
 
 export { printScheduleToDocument };
