@@ -18,9 +18,4 @@ async function postSchedule(schedule: ApiResponse): Promise<void> {
   }
 }
 
-function getDateForCalendar(): Date {
-  const today = new Date();
-  return today;
-}
-
 export { generateSchedule, getSchedule, postSchedule };
