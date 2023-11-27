@@ -32,7 +32,7 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
 This application can be used in two modes: as a command line interface (CLI) or through a web interface. Below are the instructions for both usage scenarios.
 
-#### Command Line Interface
+### Command Line Interface
 
 To run the command line interface version of the program, use the following command:
 
@@ -42,11 +42,11 @@ npm run cli
 
 This will start the CLI version of the application, allowing you to interact with it directly from your terminal.
 
-#### Web Interface
+### Web Interface
 
 To use the web interface version of the application, yyou will need to start the server and then open the `index.html` file located in the client's `public` folder.
 
-##### 1. Start the Server:
+#### 1. Start the Server:
 
 First, start the backend of the server by running:
 
@@ -56,7 +56,7 @@ npm run server
 
 This command starts the server that the web interface will communicate with.
 
-##### 2. Opening the Web Interface
+#### 2. Opening the Web Interface
 
 After starting the server, navigate to the client>public folder and open the index.html file in a web browser.
 
