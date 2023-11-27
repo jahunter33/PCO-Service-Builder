@@ -7,6 +7,7 @@
     "build": "webpack",
     "server": "node server/dist/server.js",
     "cli": "node server/dist/index.js",
+    "preferences": "node server/dist/lib/preferences_utils.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
