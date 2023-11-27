@@ -6,10 +6,13 @@ PCO-Service-Builder is a tool designed to automate service planning, utilizing t
 
 Before you start, ensure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-1. Clone the repository:
+1. First, navigate to the directory where you want to clone the repository. Then, clone the repository and change into the newly created directory:
 
    ```bash
-   git clone https://github.com/yourusername/PCO-Service-Builder.git
+   git clone https://github.com/yourusername/pco-service-builder.git
+   ```
+
+   ```bash
    cd pco-service-builder
    ```
 
@@ -19,7 +22,7 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
    npm install
    ```
 
-3. Create an `.env` file in the root directory and populate it with your Planning Center Application ID and Secret. You should also specify your Service Type ID and Team ID:
+3. Create an .env file in the root directory of the project. Populate it with your Planning Center Application ID and Secret, as well as your Service Type ID and Team ID. You can obtain these details from [https://api.planningcenteronline.com/oauth/applications]:
 
    ```env
    APPLICATION_ID=your_application_id
@@ -27,6 +30,8 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
    SERVICE_TYPE_ID=your_service_type_id
    TEAM_ID=your_team_id
    ```
+
+   Replace your_application_id, your_secret, your_service_type_id, and your_team_id with your actual credentials.
 
 ## Usage
 
