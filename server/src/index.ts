@@ -45,6 +45,7 @@ async function main(): Promise<void> {
   }
 
   // Print the schedule to the console
+  console.log(schedule);
   printScheduleToConsole(schedule);
   if (arePeopleScheduled) {
     const answer: string = await askQuestion(

@@ -8,7 +8,7 @@ interface QueryParams {
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD";
 
 interface ApiResponse {
-  data: any; // ideally this would be a generic type but each api endpoint returns different data
+  data: any;
 }
 
 interface Body {
@@ -77,15 +77,25 @@ async function fetchWebApi(
         };
       }
       const data: any = await response.json();
-      fetchedSoFar += data.data.length;
-      total = data.meta.total_count;
-      results = results.concat(data.data);
+      if (data && data.data && data.meta) {
+        fetchedSoFar += data.data.length;
+        total = data.meta.total_count;
+        results = results.concat(data.data);
+      } else {
+        throw new Error(
+          `Error: Received unexpected response. Make sure the URL is correct. Response data: ${JSON.stringify(
+            data
+          )}`
+        );
+      }
       if (data.data.length === 0 || fetchedSoFar >= total) {
         break;
       }
       offset += limit;
-    } catch (error) {
-      throw new Error(`Response unsuccessful: ${error}`);
+    } catch (error: any) {
+      const newError = new Error(`Response unsuccessful: ${error.message}`);
+      newError.stack = `${newError.stack}\n\nOriginal stack trace:\n${error.stack}`;
+      throw newError;
     }
   } while (true);
   return {

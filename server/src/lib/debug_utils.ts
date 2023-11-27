@@ -7,7 +7,7 @@ function writeJson(data: string[], fileName: string): void {
       console.error("Error creating directory: ", err);
     } else {
       fs.writeFile(
-        `./data/${fileName}`,
+        `../data/${fileName}`,
         JSON.stringify(data, null, 4),
         (err) => {
           if (err) {

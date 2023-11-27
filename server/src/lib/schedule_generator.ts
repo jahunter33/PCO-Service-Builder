@@ -5,6 +5,7 @@ import {
   Plan,
   Conflict,
   NeededPositions,
+  Schedule,
   getPeople,
   getTeamPositions,
   getTeamPositionAssignments,
@@ -13,12 +14,6 @@ import {
   getNeededPositions,
   getNextSunday,
 } from "./data_fetch_utils";
-
-interface Schedule {
-  plan_id: string;
-  plan_date: string;
-  team_positions: PositionAssignment[];
-}
 
 // main component of schedule generator
 async function generateSchedule(
