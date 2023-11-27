@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "build": "webpack",
-    "start": "ts-node src/server.ts",
+    "server": "node server/dist/server.js",
+    "cli": "node server/dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
