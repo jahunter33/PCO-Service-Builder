@@ -4,7 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config({ path: "../../.env" });
+const path = require("path");
+const envPath = path.resolve(__dirname, "../../../.env");
+dotenv_1.default.config({ path: envPath });
 const config = {
     APP_ID: process.env.APP_ID,
     SECRET: process.env.SECRET,

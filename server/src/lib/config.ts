@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../../.env" });
+const path = require("path");
+const envPath = path.resolve(__dirname, "../../../.env");
+dotenv.config({ path: envPath });
 
 interface Config {
   APP_ID: string;
