@@ -10,7 +10,7 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
    ```bash
    git clone https://github.com/yourusername/PCO-Service-Builder.git
-   cd PCO-Service-Builder
+   cd pco-service-builder
    ```
 
 2. Install the dependencies:
@@ -30,11 +30,37 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
 ## Usage
 
-To run the program:
+This application can be used in two modes: as a command line interface (CLI) or through a web interface. Below are the instructions for both usage scenarios.
+
+#### Command Line Interface
+
+To run the command line interface version of the program, use the following command:
 
 ```bash
-node src/main.js
+npm run cli
 ```
+
+This will start the CLI version of the application, allowing you to interact with it directly from your terminal.
+
+#### Web Interface
+
+To use the web interface version of the application, yyou will need to start the server and then open the `index.html` file located in the client's `public` folder.
+
+##### 1. Start the Server:
+
+First, start the backend of the server by running:
+
+```bash
+npm run server
+```
+
+This command starts the server that the web interface will communicate with.
+
+##### 2. Opening the Web Interface
+
+After starting the server, navigate to the client>public folder and open the index.html file in a web browser.
+
+For example, you can do this by locating the index.html file in your file explorer and double-clicking on it, or by entering the file path directly into your browser's address bar.
 
 ## Configuring Priorities
 
@@ -62,7 +88,6 @@ In this context, a higher priority number indicates a higher likelihood of being
 Here are some of the enhancements and features I am planning on implementing and some I am considering:
 
 - **Setlist Generator**: This feature would automatically generate a list of songs based on the scheduled players.
-- **Date Selection**: Currently you can only generate a schedule for the current week, this would give the flexibility to generate a schedule for any date of your choosing.
 - **Items, Headers, Media**: Support fort items, headers, and media.
 - **Other PCO Modules**: Expansion into giving, people, calendars, etc.
 
@@ -70,7 +95,7 @@ Please note that this roadmap is subject to change based on feedback, technical 
 
 ## Support
 
-If you encounter any problems or have any suggestions, feel free to [open an issue](https://github.com/jahunter33/PCO-Service-Builder/issues/new).
+If you encounter any problems or have any suggestions, feel free to [open an issue](https://github.com/joseph-hunter/PCO-Service-Builder/issues/new).
 
 ## License
 
