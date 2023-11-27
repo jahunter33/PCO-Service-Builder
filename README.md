@@ -33,6 +33,14 @@ Before you start, ensure you have [Node.js](https://nodejs.org/) installed on yo
 
    Replace your_application_id, your_secret, your_service_type_id, and your_team_id with your actual credentials.
 
+4. It is very important to create a preferences file before using the application. The application uses this file to determine who to schedule. To create this file, run the following command:
+
+```bash
+npm run preferences
+```
+
+Follow the instructions in the "Configuring Priorities" section to properly set up your preferences.
+
 ## Usage
 
 This application can be used in two modes: as a command line interface (CLI) or through a web interface. Below are the instructions for both usage scenarios.
