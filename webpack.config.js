@@ -2,7 +2,8 @@ const webpack = require("webpack");
 const path = require("path");
 
 const config = {
-  mode: "development",
+  // mode: "development",
+  mode: "production",
   entry: "./client/src/index.ts",
   output: {
     path: path.resolve(__dirname, "client/dist"),
