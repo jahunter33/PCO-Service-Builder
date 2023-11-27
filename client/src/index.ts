@@ -17,7 +17,12 @@
 
 import { ApiResponse } from "./lib/api_utils";
 import { printScheduleToDocument } from "./lib/document_utils";
-import { getSchedule, generateSchedule } from "./lib/data_fetch_utils";
+import {
+  getSchedule,
+  generateSchedule,
+  postSchedule,
+} from "./lib/data_fetch_utils";
+import { error } from "console";
 
 interface GlobalDate {
   date: string;
@@ -166,12 +171,14 @@ function initializeCalendar(): void {
 }
 
 function initializeScheduler(): void {
+  let schedule: ApiResponse | null = null;
+
   document
     .getElementById("schedule-generate-button")
     ?.addEventListener("click", async () => {
       try {
         const date: string = convertDateFormat(globalDate.date);
-        const schedule: ApiResponse = await generateSchedule(date);
+        schedule = await generateSchedule(date);
         printScheduleToDocument(schedule);
         if (schedule) {
           document
@@ -188,7 +195,7 @@ function initializeScheduler(): void {
     ?.addEventListener("click", async () => {
       try {
         const date: string = convertDateFormat(globalDate.date);
-        const schedule: ApiResponse = await getSchedule(date);
+        schedule = await getSchedule(date);
         printScheduleToDocument(schedule);
       } catch (error) {
         console.error("Error: ", error);
@@ -198,9 +205,18 @@ function initializeScheduler(): void {
   document
     .getElementById("schedule-post-button")
     ?.addEventListener("click", async () => {
-      document
-        .getElementById("schedule-post-button")
-        ?.setAttribute("disabled", "disabled");
+      try {
+        if (schedule) {
+          await postSchedule(schedule);
+        } else {
+          console.error("Schedule is null");
+        }
+        document
+          .getElementById("schedule-post-button")
+          ?.setAttribute("disabled", "disabled");
+      } catch (error) {
+        console.error("Error: ", error);
+      }
     });
 }
 

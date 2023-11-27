@@ -8,6 +8,7 @@ import {
   getNextSunday,
   getCurrentSchedule,
 } from "./lib/data_fetch_utils";
+import { postSchedule } from "./lib/schedule_poster";
 
 const app = express();
 
@@ -32,6 +33,12 @@ app.get("/get-schedule", async (req: Request, res: Response) => {
     const schedule: Schedule | void = await getCurrentSchedule(plan);
     res.send(schedule);
   }
+});
+
+app.post("/post-schedule", async (req: Request, res: Response) => {
+  const schedule: Schedule = req.body;
+  await postSchedule(schedule);
+  res.status(200).json({ message: "Schedule posted successfully" });
 });
 
 app.post("/goodbye", (req: Request, res: Response) => {
