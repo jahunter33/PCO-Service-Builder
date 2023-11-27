@@ -77,7 +77,7 @@ For example, you can do this by locating the index.html file in your file explor
 
 ## Configuring Priorities
 
-To modify the priority of a particular band member or player, you need to edit the preferences.json file located in the project root. This file contains each person's unique identifier and their associated priority level.
+To modify the priority of a particular band member or player, you need to edit the preferences.json file located in the `data` folder in the server directory. This file contains each person's unique identifier and their associated priority level.
 
 Here's a sample structure:
 
