@@ -27,12 +27,12 @@ exports.writeJson = void 0;
 const fs = __importStar(require("fs"));
 function writeJson(data, fileName) {
     // this is not the correct directory location to which the file should be written
-    fs.mkdir("./data", { recursive: true }, (err) => {
+    fs.mkdir("./server/data", { recursive: true }, (err) => {
         if (err) {
             console.error("Error creating directory: ", err);
         }
         else {
-            fs.writeFile(`../data/${fileName}`, JSON.stringify(data, null, 4), (err) => {
+            fs.writeFile(`./server/data/${fileName}`, JSON.stringify(data, null, 4), (err) => {
                 if (err) {
                     console.error("Error writing to file: ", err);
                 }
