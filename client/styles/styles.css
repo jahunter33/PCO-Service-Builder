@@ -1,3 +1,4 @@
+/* Base Styles */
 html {
   font-size: 10px;
   font-family: "Roboto", sans-serif;
@@ -12,6 +13,16 @@ body {
   align-items: center;
 }
 
+thead tr th {
+  font-weight: 100;
+}
+
+td {
+  padding: 0;
+  margin: 0;
+}
+
+/* Translucent Box, Main Canvas Styles */
 .translucent-box {
   position: relative;
   background-color: rgba(255, 255, 255, 0.7); /* 70% opacity */
@@ -27,20 +38,10 @@ body {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-.header-rectangle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 60px;
-  width: 100%; /* 50% of the viewport width */
-  background-color: #ffffff; /* Opaque white */
-  border-radius: 4px;
-}
-
+/* Left Column, Calendar Canvas Styles */
 .left-column {
   position: absolute;
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   flex-direction: column;
   gap: 5%;
@@ -52,27 +53,43 @@ body {
   border-radius: 4px;
 }
 
+/* Container Styles */
+.calendar-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-container {
+  display: block;
+}
+
+.schedule-container {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 31%;
+  margin-right: 6px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+/* Calendar Navigation Styles */
 .calendar-navigation {
   display: flex;
   height: 60px;
   padding-left: 7%;
   padding-right: 7%;
 }
-
-/* .calendar-navigation span,
-.calendar-navigation p {
-  vertical-align: middle;
-} */
-
-/* .calendar-navigation .calendar-current-date,
-.symbols {
-  font-size: 20px;
-}
-
-.calendar-navigation .calendar-current-date {
-  padding-left: 10px;
-  padding-right: 10px;
-} */
 
 .calendar-navigation p {
   width: 100%;
@@ -88,6 +105,14 @@ body {
   margin: 3px;
 }
 
+.calendar-arrows {
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
 #calendar-prev {
   border-width: 5px 10px 5px 0px;
   border-color: transparent mediumseagreen transparent transparent;
@@ -98,6 +123,7 @@ body {
   border-color: transparent transparent transparent mediumseagreen;
 }
 
+/* Calendar Styles */
 .calendar {
   table-layout: fixed;
   position: relative;
@@ -109,32 +135,9 @@ body {
   block-size: 100%;
 }
 
-.calendar-arrows {
-  width: 100%;
-  height: 60px;
-  display: flex;
-  justify-content: end;
-  align-items: center;
-}
-
-thead tr th {
-  font-weight: 100;
-}
-
-td {
-  padding: 0;
-  margin: 0;
-}
-
 .calendar-header {
   color: mediumseagreen;
   font-size: 15px;
-}
-
-.calendar-dates {
-  cursor: pointer;
-  font-size: medium;
-  text-align: center;
 }
 
 .inactive {
@@ -153,65 +156,13 @@ td {
   color: white;
 }
 
-.calendar-container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.message-container {
-  display: block;
-}
-
-.message {
+.calendar-dates {
+  cursor: pointer;
+  font-size: medium;
   text-align: center;
-  display: none;
 }
 
-.button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.header-container {
-  display: flex;
-  height: 100%;
-}
-
-.padding-box {
-  height: 100%;
-  width: 40%;
-  min-width: 400px;
-  max-width: 450px;
-}
-
-.schedule-container {
-  height: 100%;
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 31%;
-  margin-right: 6px;
-}
-
-.message-text {
-  font-size: 15px;
-  font-style: italic;
-  margin-bottom: 0;
-}
-
-.message-text-date {
-  margin-top: 7px;
-  font-size: 24px;
-  font-weight: 700;
-  color: mediumseagreen;
-}
-
+/* Button Styles */
 .button button {
   background: mediumseagreen;
   border: none;
@@ -246,6 +197,25 @@ td {
 
 .button button:active {
   color: lightseagreen;
+}
+
+/* Message Styles */
+.message {
+  text-align: center;
+  display: none;
+}
+
+.message-text {
+  font-size: 15px;
+  font-style: italic;
+  margin-bottom: 0;
+}
+
+.message-text-date {
+  margin-top: 7px;
+  font-size: 24px;
+  font-weight: 700;
+  color: mediumseagreen;
 }
 
 .band-member {

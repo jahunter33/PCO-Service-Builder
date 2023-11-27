@@ -1,33 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Document</title>
-    <link href="../styles/styles.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css?family=Open+Sans"
-      rel="stylesheet"
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,400;0,700;1,100&display=swap"
-      rel="stylesheet"
-    />
+    <link href="../styles/styles.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,400;0,700;1,100&display=swap" rel="stylesheet">
 
     <script src="../dist/bundle.js"></script>
   </head>
   <body>
+    <!-- Main Canvas -->
     <div class="translucent-box">
-      <!-- <div class="header-rectangle">
-        <div class="header-container">
-          <div class="padding-box"></div>
-        </div>
-      </div> -->
       <div class="left-column">
-        <!-- Calendar element -->
+        <!-- Calendar Container -->
         <div class="calendar-container">
-          <!-- Month, Year display at top -->
+          <!-- Calendar Navigation -->
           <div class="calendar-navigation">
             <p class="calendar-current-date"></p>
             <div class="calendar-arrows">
@@ -35,8 +25,8 @@
               <span id="calendar-next" class="symbols"></span>
             </div>
           </div>
-          <!-- Actual Calendar -->
 
+          <!-- Calendar Table -->
           <table id="calendar" class="calendar">
             <thead class="calendar-header">
               <tr class="cal-weekdays">
@@ -53,13 +43,18 @@
           </table>
         </div>
       </div>
+
+      <!-- Schedule Container -->
       <div class="schedule-container" id="schedule-container">
+        <!-- Message Container -->
         <div class="message-container">
           <div class="message">
             <p class="message-text">Scheduling for:</p>
             <p class="message-text-date" id="selected-date"></p>
           </div>
         </div>
+
+        <!-- Button Container -->
         <div class="button-container">
           <div class="button">
             <button id="schedule-generate-button">Generate Schedule</button>
@@ -71,12 +66,10 @@
             <button id="schedule-post-button" disabled>Post Schedule</button>
           </div>
         </div>
+
+        <!-- Schedule Display -->
         <div class="schedule" id="schedule"></div>
       </div>
     </div>
   </body>
 </html>
-
-<!-- <div class="calendarx">
-  <input type="date" id="calendarx" />
-</div> -->
