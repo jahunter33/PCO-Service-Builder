@@ -23,7 +23,9 @@ function isKeyOfConfig(key: string): key is keyof Config {
 
 for (let key in config) {
   if (isKeyOfConfig(key) && (config[key] === undefined || config[key] === "")) {
-    throw new Error(`Missing ${key} in .env file`);
+    throw new Error(
+      `Missing ${key} in .env file. Ensure that the .env file is located at ${envPath}.`
+    );
   }
 }
 
