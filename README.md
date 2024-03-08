@@ -101,7 +101,7 @@ In this context, a higher priority number indicates a higher likelihood of being
 Here are some of the enhancements and features I am planning on implementing and some I am considering:
 
 - **Setlist Generator**: This feature would automatically generate a list of songs based on the scheduled players.
-- **Items, Headers, Media**: Support fort items, headers, and media.
+- **Items, Headers, Media**: Support for items, headers, and media.
 - **Other PCO Modules**: Expansion into giving, people, calendars, etc.
 
 Please note that this roadmap is subject to change based on feedback, technical feasibility, and just my limited time in general. Please feel free to give any input as I would love to hear your ideas and suggestions!
